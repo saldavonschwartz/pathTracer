@@ -27,7 +27,7 @@ Camera::Camera(const vec3& position, const vec3& lookAt, float fovy, float aspec
 }
 
 Ray Camera::castRay(float u, float v) {
-  auto r = (aperture / 2.f) * glm::circularRand(1.f);
+  auto r = (aperture / 2.f) * glm::diskRand(1.f);
   auto offset = x*r.x + y*r.y;
   auto dir = lowerLeftImageOrigin + u*wOffset + v*hOffset - position - offset;
   return {position + offset, dir};
