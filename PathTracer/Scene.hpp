@@ -9,11 +9,9 @@
 #ifndef Scene_hpp
 #define Scene_hpp
 
-#include <memory>
+#include "HittableVector.hpp"
 
-class Hittable;
-
-std::shared_ptr<Hittable> generateSimpleScene();
-std::shared_ptr<Hittable> generateComplexScene();
+HittableVector generateSimpleScene();
+HittableVector generateComplexScene();
 
 #endif /* Scene_hpp */

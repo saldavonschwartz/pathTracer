@@ -11,7 +11,6 @@
 
 #include <iostream>
 #include <chrono>
-#include <random>
 #include <glm/vec3.hpp>
 
 using glm::vec3;

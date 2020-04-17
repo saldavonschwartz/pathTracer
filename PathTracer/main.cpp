@@ -11,7 +11,7 @@
 
 int main(int argc, const char * argv[]) {
   // 1 = simple scene; 2 = complex scene (takes longer to render):
-  int sceneId = 1;
-  renderScene(sceneId, "", 320, 200, 100, 50);
+  int sceneId = 2;
+  renderScene(sceneId, "", 800, 600, 100, 50);
   return 0;
 }

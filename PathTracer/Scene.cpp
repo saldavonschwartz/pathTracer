@@ -7,21 +7,24 @@
 //
 
 #include "Scene.hpp"
-#include "HitDetection.hpp"
+#include "Sphere.hpp"
+#include "Material.hpp"
+#include "Utils.hpp"
+#include <glm/gtc/random.hpp>
 
-using namespace std;
+using std::make_shared;
 
-shared_ptr<Hittable> generateSimpleScene() {
+HittableVector generateSimpleScene() {
   HittableVector scene;
   scene.push_back(make_shared<Sphere>(vec3(0,0,-1), 0.5, make_shared<Diffuse>(vec3(0.1, 0.2, 0.5))));
   scene.push_back(make_shared<Sphere>(vec3(0,-100.5,-1), 100, make_shared<Diffuse>(vec3(0.8, 0.8, 0.0))));
   scene.push_back(make_shared<Sphere>(vec3(1,0,-1), 0.5, make_shared<Metal>(vec3(0.8, 0.6, 0.2), 0.3)));
   scene.push_back(make_shared<Sphere>(vec3(-1,0,-1), 0.5, make_shared<Dielectric>(1.5)));
   scene.push_back(make_shared<Sphere>(vec3(-1,0,-1), -0.45, make_shared<Dielectric>(1.5)));
-  return make_shared<HittableVector>(scene);
+  return scene;
 }
 
-shared_ptr<Hittable> generateComplexScene() {
+HittableVector generateComplexScene() {
   HittableVector scene;
   scene.push_back(make_shared<Sphere>(vec3{0.f,-1000.f,0.f}, 1000.f, make_shared<Diffuse>(vec3{0.5f})));
   
@@ -32,12 +35,12 @@ shared_ptr<Hittable> generateComplexScene() {
       if (length(center - vec3{4.f, 0.2f, 0.f}) > 0.9f) {
         if (materialProbability < 0.8f) {
           // Diffuse
-          auto albedo = sphericalRand(1.) * sphericalRand(1.);
+          auto albedo = glm::sphericalRand(1.) * glm::sphericalRand(1.);
           scene.push_back(make_shared<Sphere>(center, 0.2f, make_shared<Diffuse>(albedo)));
         }
         else if (materialProbability < 0.95f) {
           // Metal
-          auto albedo = sphericalRand(.5f) + 0.5f;
+          auto albedo = glm::sphericalRand(.5f) + 0.5f;
           auto fuzziness = urand(0, 1);
           scene.push_back(make_shared<Sphere>(center, 0.2f, make_shared<Metal>(albedo, fuzziness)));
         } else {
@@ -51,7 +54,7 @@ shared_ptr<Hittable> generateComplexScene() {
   scene.push_back(make_shared<Sphere>(vec3{0.f, 1.f, 0.f}, 1.f, make_shared<Dielectric>(1.5f)));
   scene.push_back(make_shared<Sphere>(vec3{-4.f, 1.f, 0.f}, 1.f, make_shared<Diffuse>(vec3{0.4f, 0.2f, 0.1f})));
   scene.push_back(make_shared<Sphere>(vec3{4.f, 1.f, 0.f}, 1.f, make_shared<Metal>(vec3{0.7f, 0.6f, 0.5f}, 0.f)));
-  return make_shared<HittableVector>(scene);
+  return scene;
 }
 
 

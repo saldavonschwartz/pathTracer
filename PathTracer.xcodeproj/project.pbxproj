@@ -11,7 +11,13 @@
 		1529270C2449398700ACF6AB /* PathTracer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1529270A2449398700ACF6AB /* PathTracer.cpp */; };
 		1529270F24493AC300ACF6AB /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1529270D24493AC300ACF6AB /* Utils.cpp */; };
 		15292CCC244946F400ACF6AB /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15292CCA244946F400ACF6AB /* Scene.cpp */; };
-		15292CCF2449483900ACF6AB /* HitDetection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15292CCD2449483900ACF6AB /* HitDetection.cpp */; };
+		15292CD2244949A900ACF6AB /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15292CD0244949A900ACF6AB /* Material.cpp */; };
+		15292CD524494A3500ACF6AB /* Hittable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15292CD324494A3500ACF6AB /* Hittable.cpp */; };
+		15292CD824494A4300ACF6AB /* Ray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15292CD624494A4300ACF6AB /* Ray.cpp */; };
+		15292CDB24494BD900ACF6AB /* BVH.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15292CD924494BD900ACF6AB /* BVH.cpp */; };
+		15292CDE24494E0B00ACF6AB /* HittableVector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15292CDC24494E0B00ACF6AB /* HittableVector.cpp */; };
+		15292CE1244950D000ACF6AB /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15292CDF244950D000ACF6AB /* Camera.cpp */; };
+		15292CE42449520F00ACF6AB /* Sphere.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15292CE22449520F00ACF6AB /* Sphere.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -418,8 +424,20 @@
 		15292CC824493C0600ACF6AB /* type_aligned.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = type_aligned.hpp; sourceTree = "<group>"; };
 		15292CCA244946F400ACF6AB /* Scene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
 		15292CCB244946F400ACF6AB /* Scene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Scene.hpp; sourceTree = "<group>"; };
-		15292CCD2449483900ACF6AB /* HitDetection.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HitDetection.cpp; sourceTree = "<group>"; };
-		15292CCE2449483900ACF6AB /* HitDetection.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HitDetection.hpp; sourceTree = "<group>"; };
+		15292CD0244949A900ACF6AB /* Material.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Material.cpp; sourceTree = "<group>"; };
+		15292CD1244949A900ACF6AB /* Material.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Material.hpp; sourceTree = "<group>"; };
+		15292CD324494A3500ACF6AB /* Hittable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Hittable.cpp; sourceTree = "<group>"; };
+		15292CD424494A3500ACF6AB /* Hittable.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Hittable.hpp; sourceTree = "<group>"; };
+		15292CD624494A4300ACF6AB /* Ray.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Ray.cpp; sourceTree = "<group>"; };
+		15292CD724494A4300ACF6AB /* Ray.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Ray.hpp; sourceTree = "<group>"; };
+		15292CD924494BD900ACF6AB /* BVH.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BVH.cpp; sourceTree = "<group>"; };
+		15292CDA24494BD900ACF6AB /* BVH.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = BVH.hpp; sourceTree = "<group>"; };
+		15292CDC24494E0B00ACF6AB /* HittableVector.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = HittableVector.cpp; sourceTree = "<group>"; };
+		15292CDD24494E0B00ACF6AB /* HittableVector.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = HittableVector.hpp; sourceTree = "<group>"; };
+		15292CDF244950D000ACF6AB /* Camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
+		15292CE0244950D000ACF6AB /* Camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Camera.hpp; sourceTree = "<group>"; };
+		15292CE22449520F00ACF6AB /* Sphere.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Sphere.cpp; sourceTree = "<group>"; };
+		15292CE32449520F00ACF6AB /* Sphere.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Sphere.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -460,8 +478,20 @@
 				1529270E24493AC300ACF6AB /* Utils.hpp */,
 				15292CCA244946F400ACF6AB /* Scene.cpp */,
 				15292CCB244946F400ACF6AB /* Scene.hpp */,
-				15292CCD2449483900ACF6AB /* HitDetection.cpp */,
-				15292CCE2449483900ACF6AB /* HitDetection.hpp */,
+				15292CD0244949A900ACF6AB /* Material.cpp */,
+				15292CD1244949A900ACF6AB /* Material.hpp */,
+				15292CD324494A3500ACF6AB /* Hittable.cpp */,
+				15292CD424494A3500ACF6AB /* Hittable.hpp */,
+				15292CD624494A4300ACF6AB /* Ray.cpp */,
+				15292CD724494A4300ACF6AB /* Ray.hpp */,
+				15292CD924494BD900ACF6AB /* BVH.cpp */,
+				15292CDA24494BD900ACF6AB /* BVH.hpp */,
+				15292CDC24494E0B00ACF6AB /* HittableVector.cpp */,
+				15292CDD24494E0B00ACF6AB /* HittableVector.hpp */,
+				15292CDF244950D000ACF6AB /* Camera.cpp */,
+				15292CE0244950D000ACF6AB /* Camera.hpp */,
+				15292CE22449520F00ACF6AB /* Sphere.cpp */,
+				15292CE32449520F00ACF6AB /* Sphere.hpp */,
 			);
 			path = PathTracer;
 			sourceTree = "<group>";
@@ -969,11 +999,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15292CCF2449483900ACF6AB /* HitDetection.cpp in Sources */,
+				15292CDB24494BD900ACF6AB /* BVH.cpp in Sources */,
+				15292CD524494A3500ACF6AB /* Hittable.cpp in Sources */,
+				15292CE1244950D000ACF6AB /* Camera.cpp in Sources */,
 				15292CCC244946F400ACF6AB /* Scene.cpp in Sources */,
+				15292CD2244949A900ACF6AB /* Material.cpp in Sources */,
+				15292CD824494A4300ACF6AB /* Ray.cpp in Sources */,
 				152927042449393900ACF6AB /* main.cpp in Sources */,
+				15292CE42449520F00ACF6AB /* Sphere.cpp in Sources */,
 				1529270F24493AC300ACF6AB /* Utils.cpp in Sources */,
 				1529270C2449398700ACF6AB /* PathTracer.cpp in Sources */,
+				15292CDE24494E0B00ACF6AB /* HittableVector.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

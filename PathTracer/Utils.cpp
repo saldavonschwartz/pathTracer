@@ -7,13 +7,11 @@
 //
 
 #include "Utils.hpp"
+#include <random>
 #include <glm/glm.hpp>
 
-using namespace std;
-using namespace glm;
-
-static uniform_real_distribution<double> uniform01(0., 1.);
-static mt19937 generator;
+static std::uniform_real_distribution<double> uniform01(0., 1.);
+static std::mt19937 generator;
 
 double urand(double min, double max) {
   return min + (max-min)*uniform01(generator);
