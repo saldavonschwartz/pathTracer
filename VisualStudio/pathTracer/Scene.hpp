@@ -9,6 +9,8 @@
 #ifndef Scene_hpp
 #define Scene_hpp
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 #include "HittableVector.hpp"
 
 HittableVector generateSimpleScene();

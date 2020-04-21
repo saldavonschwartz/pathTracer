@@ -9,26 +9,29 @@
 #ifndef Camera_hpp
 #define Camera_hpp
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 #include "Ray.hpp"
+#include "Utils.hpp"
 
 class Camera {
 public:
-  vec3 position;
+  gvec3 position;
   float aspectRatio;
   float focalLength;
   float aperture;
   float fovy;
 
-  Camera(const vec3& position, const vec3& lookAt, float fovy, float aspectRatio, float focalLength, float aperture);
+  __host__ __device__ Camera(const gvec3& position, const gvec3& lookAt, float fovy, float aspectRatio, float focalLength, float aperture);
   
-  Ray castRay(float u, float v);
+  __host__ __device__ Ray castRay(float u, float v) const;
 
 private:
   float hh, hw;
-  vec3 x, y;
-  vec3 hOffset;
-  vec3 wOffset;
-  vec3 lowerLeftImageOrigin;
+  gvec3 x, y;
+  gvec3 hOffset;
+  gvec3 wOffset;
+  gvec3 lowerLeftImageOrigin;
 };
 
 #endif /* Camera_hpp */

@@ -9,21 +9,20 @@
 #ifndef HittableVector_hpp
 #define HittableVector_hpp
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 #include "Hittable.hpp"
-
-#include <vector>
-#include <memory>
-
-using std::vector;
-using std::shared_ptr;
 
 class HittableVector : public Hittable {
 public:
-  vector<shared_ptr<Hittable>> data;
-  
-  void push_back(shared_ptr<Hittable> hittable);
-  bool boundingBox(double t0, double t1, AABA& bBox) const override;
-  bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override;
+	Hittable** data = nullptr;
+	size_t size = 0;
+
+	__host__ __device__ HittableVector() = default;
+	__host__ __device__ HittableVector(Hittable** data, size_t size) : data(data), size(size) {}
+  //__host__ __device__ void push_back(Hittable* hittable);
+  __host__ __device__ bool boundingBox(double t0, double t1, AABA& bBox) const override;
+  __host__ __device__ bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override;
 };
 
 

@@ -18,8 +18,8 @@
 
 using glm::vec3;
 
-const double inf = std::numeric_limits<double>::infinity();
-const double pi = 3.1415926535897932385;
+const float inf = std::numeric_limits<float>::infinity();
+const float pi = 3.1415926535897932385f;
 
 class gvec3 {
 public:
@@ -32,8 +32,9 @@ public:
 		};
 	};
 
-	__host__ __device__ gvec3() {}
-	__host__ __device__ gvec3(float e0, float e1, float e2) { e[0] = e0; e[1] = e1; e[2] = e2; }
+	__host__ __device__ gvec3(): x(0.f), y(0.f), z(0.f) {}
+	__host__ __device__ gvec3(float x) : x(x), y(x), z(x) {}
+	__host__ __device__ gvec3(float x, float y, float z) : x(x), y(y), z(z) {}
 	__host__ __device__ const gvec3& operator+() const { return *this; }
 	__host__ __device__ gvec3 operator-() const { return gvec3(-e[0], -e[1], -e[2]); }
 	__host__ __device__ float operator[](int i) const { return e[i]; }
@@ -152,7 +153,7 @@ __host__ __device__ inline gvec3 normalize(const gvec3& v) {
 	return v / length(v);
 }
 
-__host__ __device__ double urand(double min, double max);
+__host__ __device__ float urand(float min, float max);
 __host__ __device__ gvec3 reflect(const gvec3& i, const gvec3& n);
 __host__ __device__ gvec3 refract(const gvec3& i, const gvec3& n, float k1, float k2);
 __host__ __device__ float reflectance(const gvec3& i, const gvec3& n, float k1, float k2);

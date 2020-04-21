@@ -9,44 +9,40 @@
 #ifndef Hittable_hpp
 #define Hittable_hpp
 
-#include <glm/vec3.hpp>
-#include <glm/vec4.hpp>
-#include <memory>
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 #include "Ray.hpp"
-
-using glm::vec3;
-using glm::vec4;
 
 class Material;
 
 class AABA {
 public:
-  vec3 xmin{0.f};
-  vec3 xmax{0.f};
+  gvec3 xmin;
+  gvec3 xmax;
   
-  static AABA surroundingBox(const AABA& bBox0, const AABA& bBox1);
+  __host__ __device__ static AABA surroundingBox(const AABA& bBox0, const AABA& bBox1);
   
-  AABA() = default;
+  __host__ __device__ AABA() = default;
   
-  AABA(vec3 xmin, vec3 xmax)
+  __host__ __device__ AABA(gvec3 xmin, gvec3 xmax)
   : xmin(xmin), xmax(xmax) {}
   
-  bool hit(const Ray& ray, float tmin, float tmax) const;
+  __host__ __device__ bool hit(const Ray& ray, float tmin, float tmax) const;
 };
 
 class Hittable {
 public:
   struct HitInfo {
-    vec3 hitPoint{0.f};
-    vec3 normal{0.f};
+    gvec3 hitPoint{0.f};
+    gvec3 normal{0.f};
     bool isFrontFace = false;
     float t = 0;
-    std::shared_ptr<Material> material;
+    Material* material;
   };
   
-  virtual bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const = 0;
-  virtual bool boundingBox(double t0, double t1, AABA& bBox) const = 0;
-  virtual ~Hittable() = default;
+  __host__ __device__ virtual bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const = 0;
+  __host__ __device__ virtual bool boundingBox(double t0, double t1, AABA& bBox) const = 0;
+  __host__ __device__ virtual ~Hittable() = default;
 };
 
 

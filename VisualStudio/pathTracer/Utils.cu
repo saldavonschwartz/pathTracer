@@ -13,7 +13,7 @@
 static std::uniform_real_distribution<double> uniform01(0., 1.);
 static std::mt19937 generator;
 
-double urand(double min, double max) {
+float urand(float min, float max) {
   return min + (max-min)*uniform01(generator);
 };
 
@@ -51,12 +51,12 @@ double urand(double min, double max) {
 //  return vec3(r*cos(a), r*sin(a), z);
 //}
 
-vec3 reflect(const vec3& i, const vec3& n) {
+gvec3 reflect(const gvec3& i, const gvec3& n) {
   return i + 2.f * -dot(i, n) * n;
 }
 
 // Source: https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
-vec3 refract(const vec3& i, const vec3& n, float k1, float k2) {
+gvec3 refract(const gvec3& i, const gvec3& n, float k1, float k2) {
   auto k = k1/k2;
   auto cosi = -dot(i, n);
   auto sin2t = k*k * (1.f - cosi*cosi);
@@ -65,7 +65,7 @@ vec3 refract(const vec3& i, const vec3& n, float k1, float k2) {
 }
 
 // Source: https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
-float reflectance(const vec3& i, const vec3& n, float k1, float k2) {
+float reflectance(const gvec3& i, const gvec3& n, float k1, float k2) {
   auto r0 = (k1-k2)/(k1+k2);
   r0 *= r0;
   auto cosi = -dot(i, n);

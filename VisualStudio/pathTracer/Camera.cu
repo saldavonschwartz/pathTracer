@@ -7,16 +7,14 @@
 //
 
 #include "Camera.hpp"
-#include <glm/glm.hpp>
-#include <glm/gtc/random.hpp>
 
-Camera::Camera(const vec3& position, const vec3& lookAt, float fovy, float aspectRatio, float focalLength, float aperture)
+Camera::Camera(const gvec3& position, const gvec3& lookAt, float fovy, float aspectRatio, float focalLength, float aperture)
 : position(position), fovy(fovy), aspectRatio(aspectRatio), focalLength(focalLength), aperture(aperture) {
   float hh = tan(glm::radians(fovy)/2.f);
   float hw = aspectRatio * hh;
 
   // [x y z p] = new camera orientation:
-  vec3 z = normalize(position - lookAt);
+  gvec3 z = normalize(position - lookAt);
   x = normalize(cross({0.f, 1.f, 0.f}, z));
   y = cross(z, x);
 
@@ -26,7 +24,7 @@ Camera::Camera(const vec3& position, const vec3& lookAt, float fovy, float aspec
   wOffset = 2*hw*f*x;
 }
 
-Ray Camera::castRay(float u, float v) {
+Ray Camera::castRay(float u, float v) const {
   auto r = (aperture / 2.f) * glm::diskRand(1.f);
   auto offset = x*r.x + y*r.y;
   auto dir = lowerLeftImageOrigin + u*wOffset + v*hOffset - position - offset;

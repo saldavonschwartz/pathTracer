@@ -8,14 +8,15 @@
 
 #include "HittableVector.hpp"
 
-void HittableVector::push_back(shared_ptr<Hittable> hittable) {
-  data.push_back(hittable);
-}
+//void HittableVector::push_back(shared_ptr<Hittable> hittable) {
+//  data.push_back(hittable);
+//}
 
 bool HittableVector::boundingBox(double t0, double t1, AABA& bBox) const {
   bool firstTime = true;
   AABA bBoxTemp;
   
+  // TODO: 0xfede
   for (auto& h: data) {
     if (!h->boundingBox(t0, t1, bBoxTemp)) {
       return false;
@@ -38,6 +39,7 @@ bool HittableVector::hit(const Ray& ray, float tmin, float tmax, HitInfo& info) 
   bool hitAny = false;
   HitInfo _info;
   
+  // TODO: 0xfede
   for (auto& h : data) {
     if (h->hit(ray, tmin, closest, _info)) {
       closest = _info.t;

@@ -9,6 +9,8 @@
 #ifndef Material_hpp
 #define Material_hpp
 
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
 #include "Ray.hpp"
 #include "Hittable.hpp"
 
