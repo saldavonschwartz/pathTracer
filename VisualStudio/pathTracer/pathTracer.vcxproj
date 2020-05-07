@@ -10,6 +10,31 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="BVH.cu" />
+    <CudaCompile Include="Camera.cu" />
+    <CudaCompile Include="Hittable.cu" />
+    <CudaCompile Include="HittableVector.cu" />
+    <CudaCompile Include="main.cu" />
+    <CudaCompile Include="Material.cu" />
+    <CudaCompile Include="PathTracer.cu" />
+    <CudaCompile Include="Ray.cu" />
+    <CudaCompile Include="Scene.cu" />
+    <CudaCompile Include="Sphere.cu" />
+    <CudaCompile Include="Utils.cu" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="BVH.hpp" />
+    <ClInclude Include="Camera.hpp" />
+    <ClInclude Include="Hittable.hpp" />
+    <ClInclude Include="HittableVector.hpp" />
+    <ClInclude Include="Material.hpp" />
+    <ClInclude Include="PathTracer.hpp" />
+    <ClInclude Include="Ray.hpp" />
+    <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="Sphere.hpp" />
+    <ClInclude Include="Utils.hpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6BD3E0ED-FF3E-477B-9FA1-A4C00984EE1F}</ProjectGuid>
     <RootNamespace>pathTracer</RootNamespace>
@@ -81,36 +106,6 @@
       <TargetMachinePlatform>64</TargetMachinePlatform>
     </CudaCompile>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <CudaCompile Include="kernel.cu" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="BVH.cpp" />
-    <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Hittable.cpp" />
-    <ClCompile Include="HittableVector.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="Material.cpp" />
-    <CudaCompile Include="PathTracer.cu">
-      <FileType>CppCode</FileType>
-    </CudaCompile>
-    <ClCompile Include="Ray.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="Utils.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="BVH.hpp" />
-    <ClInclude Include="Camera.hpp" />
-    <ClInclude Include="Hittable.hpp" />
-    <ClInclude Include="HittableVector.hpp" />
-    <ClInclude Include="Material.hpp" />
-    <ClInclude Include="PathTracer.hpp" />
-    <ClInclude Include="Ray.hpp" />
-    <ClInclude Include="Scene.hpp" />
-    <ClInclude Include="Sphere.hpp" />
-    <ClInclude Include="Utils.hpp" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 10.2.targets" />

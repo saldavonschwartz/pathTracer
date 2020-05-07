@@ -13,44 +13,40 @@
 #include "device_launch_parameters.h"
 #include "Ray.hpp"
 #include "Hittable.hpp"
+#include "Utils.hpp"
 
 using HitInfo = Hittable::HitInfo;
 
+
 class Material {
 public:
-  virtual bool scatter(const Ray& ray, const HitInfo& info, vec3& attenuation, Ray& scattered) const = 0;
-  virtual ~Material() = default;
+  __device__ virtual bool scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rState) const = 0;
+	__device__ virtual ~Material() {};
 };
 
 class Diffuse : public Material {
 public:
-  vec3 albedo;
+  gvec3 albedo;
   
-  Diffuse(const vec3& albedo)
-  : albedo(albedo) {}
-  
-  bool scatter(const Ray& ray, const HitInfo& info, vec3& attenuation, Ray& scattered) const override;
+	__device__ Diffuse(const gvec3& albedo) : albedo(albedo) {}
+	__device__ bool scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rState) const override;
 };
 
 class Metal : public Material {
 public:
-  vec3 albedo;
+  gvec3 albedo;
   float fuzziness;
   
-  Metal(const vec3& albedo, float fuzziness)
-  : albedo(albedo), fuzziness(fuzziness) {}
-  
-  bool scatter(const Ray& ray, const HitInfo& info, vec3& attenuation, Ray& scattered) const override;
+	__device__ Metal(const gvec3& albedo, float fuzziness) : albedo(albedo), fuzziness(fuzziness) {}
+	__device__ bool scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rState) const override;
 };
 
 class Dielectric : public Material {
 public:
   float refractionIdx;
   
-  Dielectric(float refractionIdx)
-  : refractionIdx(refractionIdx) {}
-  
-  bool scatter(const Ray& ray, const HitInfo& info, vec3& attenuation, Ray& scattered) const override;
+	__device__ Dielectric(float refractionIdx) : refractionIdx(refractionIdx) {}
+	__device__ bool scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rState) const override;
 };
 
 #endif /* Material_hpp */

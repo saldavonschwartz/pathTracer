@@ -7,23 +7,51 @@
 //
 
 #include "Hittable.hpp"
-#include "math_functions.h"
 
-AABA AABA::surroundingBox(const AABA& bBox0, const AABA& bBox1) {
-	// TODO: 0xfede
-	//return AABA(min(bBox0.xmin, bBox1.xmin), max(bBox0.xmax, bBox1.xmax));
+//__device__ AABA AABA::surroundingBox(const AABA& b0, const AABA& b1) {
+//	gvec3 small = { 
+//		fminf(b0.xmin.x, b1.xmin.x), 
+//		fminf(b0.xmin.y, b1.xmin.y) , 
+//		fminf(b0.xmin.z, b1.xmin.z) 
+//	};
+//	
+//	gvec3 big = {
+//		fmaxf(b0.xmax.x, b1.xmax.x), 
+//		fmaxf(b0.xmax.y, b1.xmax.y), 
+//		fmaxf(b0.xmax.z, b1.xmax.z)
+//	};
+//
+//	return {small, big};
+//}
 
-	return {};
-}
-
-bool AABA::hit(const Ray& ray, float tmin, float tmax) const {
+__device__ bool AABA::hit(const Ray& ray, float tmin, float tmax) const {
 	// TODO: 0xfede
   /*auto xminIntersect = (xmin - ray.origin) / ray.dir;
   auto xmaxIntersect = (xmax - ray.origin) / ray.dir;
   auto t0 = min(xminIntersect, xmaxIntersect);
   auto t1 = max(xminIntersect, xmaxIntersect);
-  tmin = compMax(vec4(t0, tmin));
-  tmax = compMin(vec4(t1, tmax));
+  tmin = compMax(gvec4(t0, tmin));
+  tmax = compMin(gvec4(t1, tmax));
   return tmin < tmax;*/
-	return false;
+
+	for (int a = 0; a < 3; a++) {
+		auto invD = 1.0f / ray.dir[a];
+		auto t0 = (xmin[a] - ray.origin[a]) * invD;
+		auto t1 = (xmax[a] - ray.origin[a]) * invD;
+		
+		if (invD < 0.0f) {
+			auto tn = t0;
+			t0 = t1;
+			t1 = tn;
+		}
+
+		tmin = t0 > tmin ? t0 : tmin;
+		tmax = t1 < tmax ? t1 : tmax;
+		
+		if (tmax <= tmin) {
+			return false;
+		}
+	}
+
+	return true;
 }

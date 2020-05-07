@@ -17,12 +17,14 @@ class HittableVector : public Hittable {
 public:
 	Hittable** data = nullptr;
 	size_t size = 0;
+	size_t idx = 0;
 
-	__host__ __device__ HittableVector() = default;
-	__host__ __device__ HittableVector(Hittable** data, size_t size) : data(data), size(size) {}
-  //__host__ __device__ void push_back(Hittable* hittable);
-  __host__ __device__ bool boundingBox(double t0, double t1, AABA& bBox) const override;
-  __host__ __device__ bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override;
+	__device__ HittableVector() {};
+	__device__ HittableVector(Hittable** data, size_t size) : data(data), size(size) {}
+  __device__ void push_back(Hittable* hittable);
+  __device__ bool boundingBox(double t0, double t1, AABA& bBox) const override;
+  __device__ bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override;
+	__device__ ~HittableVector();
 };
 
 

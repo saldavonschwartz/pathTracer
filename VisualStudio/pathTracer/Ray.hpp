@@ -16,12 +16,12 @@ public:
   gvec3 origin;
   gvec3 dir;
 
-  __host__ __device__  Ray() = default;
+  __device__  Ray() {};
 
-  __host__ __device__  Ray(const gvec3& origin, const gvec3& dir)
+  __device__  Ray(const gvec3& origin, const gvec3& dir)
   : origin(origin), dir(normalize(dir)) {}
 
-  __host__ __device__ gvec3 operator()(float t) const {
+  __device__ gvec3 operator()(float t) const {
     return origin + t * dir;
   }
 };

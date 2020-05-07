@@ -7,10 +7,11 @@
 //
 
 #include "Camera.hpp"
+#include "Utils.hpp"
 
-Camera::Camera(const gvec3& position, const gvec3& lookAt, float fovy, float aspectRatio, float focalLength, float aperture)
+__device__ Camera::Camera(const gvec3& position, const gvec3& lookAt, float fovy, float aspectRatio, float focalLength, float aperture)
 : position(position), fovy(fovy), aspectRatio(aspectRatio), focalLength(focalLength), aperture(aperture) {
-  float hh = tan(glm::radians(fovy)/2.f);
+  float hh = tanf((fovy * (pi/180.f)/2.f));
   float hw = aspectRatio * hh;
 
   // [x y z p] = new camera orientation:
@@ -24,8 +25,8 @@ Camera::Camera(const gvec3& position, const gvec3& lookAt, float fovy, float asp
   wOffset = 2*hw*f*x;
 }
 
-Ray Camera::castRay(float u, float v) const {
-  auto r = (aperture / 2.f) * glm::diskRand(1.f);
+__device__ Ray Camera::castRay(float u, float v, curandState* rState) const {
+  auto r = (aperture / 2.f) * diskRand(1.f, rState);
   auto offset = x*r.x + y*r.y;
   auto dir = lowerLeftImageOrigin + u*wOffset + v*hOffset - position - offset;
   return {position + offset, dir};

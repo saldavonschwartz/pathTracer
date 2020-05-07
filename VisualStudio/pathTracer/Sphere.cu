@@ -8,18 +8,18 @@
 
 #include "Sphere.hpp"
 
-bool Sphere::boundingBox(double t0, double t1, AABA& bBox) const {
-  vec3 extent{radius};
+__device__ bool Sphere::boundingBox(double t0, double t1, AABA& bBox) const {
+  gvec3 extent{radius};
   bBox = AABA(position - extent, position + extent);
   return true;
 }
 
-bool Sphere::hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const {
+__device__ inline bool Sphere::hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const {
   // From ray eq. r(t) = 0 + t*d and sphere eq. (x-c)^2 - r^2 = 0
   // Solve quadratic (r(t)-c)^2 -r^2 = 0 -> a*t^2 + b*t + c = 0
   // 0 roots = no hit, 1 root = tanget hit, 2 roots = went in and thru:
   
-  vec3 oc = ray.origin - position;
+  gvec3 oc = ray.origin - position;
   float a = dot(ray.dir, ray.dir);
   float b = dot(oc, ray.dir);
   float c = dot(oc, oc) - radius*radius;

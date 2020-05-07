@@ -10,14 +10,11 @@ C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.1
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\cstdio
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\cstdlib
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\cstring
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\ctime
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\cwchar
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\eh.h
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\exception
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\fstream
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\initializer_list
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\intrin0.h
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\iomanip
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\ios
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\iosfwd
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\iostream
@@ -56,9 +53,7 @@ C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.1
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\xlocale
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\xlocinfo
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\xlocinfo.h
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\xlocmon
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\xlocnum
-C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\xloctime
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\xmemory
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\xmemory0
 C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\VC\Tools\MSVC\14.16.27023\include\xstddef
@@ -162,13 +157,6 @@ c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\texture_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\vector_functions.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\vector_functions.hpp
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\vector_types.h
-c:\users\saldavonschwartz\desktop\workspace\pathtracer\visualstudio\pathtracer\BVH.hpp
-c:\users\saldavonschwartz\desktop\workspace\pathtracer\visualstudio\pathtracer\Camera.hpp
-c:\users\saldavonschwartz\desktop\workspace\pathtracer\visualstudio\pathtracer\Hittable.hpp
-c:\users\saldavonschwartz\desktop\workspace\pathtracer\visualstudio\pathtracer\HittableVector.hpp
-c:\users\saldavonschwartz\desktop\workspace\pathtracer\visualstudio\pathtracer\Material.hpp
-C:\Users\saldavonschwartz\Desktop\workspace\pathTracer\VisualStudio\pathTracer\PathTracer.cu
-c:\users\saldavonschwartz\desktop\workspace\pathtracer\visualstudio\pathtracer\PathTracer.hpp
+C:\Users\saldavonschwartz\Desktop\workspace\pathTracer\VisualStudio\pathTracer\Ray.cu
 c:\users\saldavonschwartz\desktop\workspace\pathtracer\visualstudio\pathtracer\Ray.hpp
-c:\users\saldavonschwartz\desktop\workspace\pathtracer\visualstudio\pathtracer\Scene.hpp
 c:\users\saldavonschwartz\desktop\workspace\pathtracer\visualstudio\pathtracer\Utils.hpp

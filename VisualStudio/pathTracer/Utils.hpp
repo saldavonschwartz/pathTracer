@@ -11,15 +11,23 @@
 
 #include <iostream>
 #include <chrono>
-#include <glm/vec3.hpp>
 #include <string>
 #include "cuda_runtime.h"
 #include "device_launch_parameters.h"
+#include "curand_kernel.h"
 
-using glm::vec3;
+#define CHK_CUDA(val) check_cuda( (val), #val, __FILE__, __LINE__ )
 
-const float inf = std::numeric_limits<float>::infinity();
-const float pi = 3.1415926535897932385f;
+void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line) {
+	if (result) {
+		std::cerr << "CUDA error = " << static_cast<unsigned int>(result) << " at " <<
+			file << ":" << line << " '" << func << "' \n";
+		cudaDeviceReset();
+		exit(-1);
+	}
+}
+
+__constant__ const float pi = 3.1415926535897932385f;
 
 class gvec3 {
 public:
@@ -58,87 +66,42 @@ inline std::ostream& operator<<(std::ostream &os, const gvec3 &t) {
 	return os;
 }
 
-inline gvec3 operator+(const gvec3 &v1, const gvec3 &v2) {
+__host__ __device__ inline gvec3 operator+(const gvec3 &v1, const gvec3 &v2) {
 	return gvec3(v1.e[0] + v2.e[0], v1.e[1] + v2.e[1], v1.e[2] + v2.e[2]);
 }
 
-inline gvec3 operator-(const gvec3 &v1, const gvec3 &v2) {
+__host__ __device__ inline gvec3 operator-(const gvec3 &v1, const gvec3 &v2) {
 	return gvec3(v1.e[0] - v2.e[0], v1.e[1] - v2.e[1], v1.e[2] - v2.e[2]);
 }
 
-inline gvec3 operator*(const gvec3 &v1, const gvec3 &v2) {
+__host__ __device__ inline gvec3 operator*(const gvec3 &v1, const gvec3 &v2) {
 	return gvec3(v1.e[0] * v2.e[0], v1.e[1] * v2.e[1], v1.e[2] * v2.e[2]);
 }
 
-inline gvec3 operator/(const gvec3 &v1, const gvec3 &v2) {
+__host__ __device__ inline gvec3 operator/(const gvec3 &v1, const gvec3 &v2) {
 	return gvec3(v1.e[0] / v2.e[0], v1.e[1] / v2.e[1], v1.e[2] / v2.e[2]);
 }
 
-inline gvec3 operator*(float t, const gvec3 &v) {
+__host__ __device__ inline gvec3 operator*(float t, const gvec3 &v) {
 	return gvec3(t*v.e[0], t*v.e[1], t*v.e[2]);
 }
 
-inline gvec3 operator/(gvec3 v, float t) {
+__host__ __device__ inline gvec3 operator/(gvec3 v, float t) {
 	return gvec3(v.e[0] / t, v.e[1] / t, v.e[2] / t);
 }
 
-inline gvec3 operator*(const gvec3 &v, float t) {
+__host__ __device__ inline gvec3 operator*(const gvec3 &v, float t) {
 	return gvec3(t*v.e[0], t*v.e[1], t*v.e[2]);
 }
 
-inline float dot(const gvec3 &v1, const gvec3 &v2) {
+__host__ __device__ inline float dot(const gvec3 &v1, const gvec3 &v2) {
 	return v1.e[0] * v2.e[0] + v1.e[1] * v2.e[1] + v1.e[2] * v2.e[2];
 }
 
-inline gvec3 cross(const gvec3 &v1, const gvec3 &v2) {
+__host__ __device__ inline gvec3 cross(const gvec3 &v1, const gvec3 &v2) {
 	return gvec3((v1.e[1] * v2.e[2] - v1.e[2] * v2.e[1]),
 		(-(v1.e[0] * v2.e[2] - v1.e[2] * v2.e[0])),
 		(v1.e[0] * v2.e[1] - v1.e[1] * v2.e[0]));
-}
-
-
-inline gvec3& gvec3::operator+=(const gvec3 &v) {
-	e[0] += v.e[0];
-	e[1] += v.e[1];
-	e[2] += v.e[2];
-	return *this;
-}
-
-inline gvec3& gvec3::operator*=(const gvec3 &v) {
-	e[0] *= v.e[0];
-	e[1] *= v.e[1];
-	e[2] *= v.e[2];
-	return *this;
-}
-
-inline gvec3& gvec3::operator/=(const gvec3 &v) {
-	e[0] /= v.e[0];
-	e[1] /= v.e[1];
-	e[2] /= v.e[2];
-	return *this;
-}
-
-inline gvec3& gvec3::operator-=(const gvec3& v) {
-	e[0] -= v.e[0];
-	e[1] -= v.e[1];
-	e[2] -= v.e[2];
-	return *this;
-}
-
-inline gvec3& gvec3::operator*=(const float t) {
-	e[0] *= t;
-	e[1] *= t;
-	e[2] *= t;
-	return *this;
-}
-
-inline gvec3& gvec3::operator/=(const float t) {
-	float k = 1.0 / t;
-
-	e[0] *= k;
-	e[1] *= k;
-	e[2] *= k;
-	return *this;
 }
 
 __host__ __device__ inline float length2(const gvec3& v) {
@@ -153,10 +116,68 @@ __host__ __device__ inline gvec3 normalize(const gvec3& v) {
 	return v / length(v);
 }
 
-__host__ __device__ float urand(float min, float max);
-__host__ __device__ gvec3 reflect(const gvec3& i, const gvec3& n);
-__host__ __device__ gvec3 refract(const gvec3& i, const gvec3& n, float k1, float k2);
-__host__ __device__ float reflectance(const gvec3& i, const gvec3& n, float k1, float k2);
+__device__ inline gvec3 diskRand(float radius, curandState* rState) {
+	gvec3 p;
+
+	do {
+		p = gvec3{ curand_uniform(rState) * 2.f - 1,  curand_uniform(rState) * 2.f - 1, 0 };
+	} while (dot(p, p) >= 1);
+
+	return p * radius;
+}
+
+__device__ inline gvec3 ballRand(float radius, curandState* rState) {
+	gvec3 p;
+
+	do {
+		p = gvec3{ curand_uniform(rState) * 2.f - 1, curand_uniform(rState) * 2.f - 1, curand_uniform(rState) * 2.f - 1 };
+	} while (dot(p, p) >= 1);
+
+	return p * radius;
+}
+
+__device__ inline gvec3 sphericalRand(float radius, curandState* rState) {
+	auto a = curand_uniform(rState) * 2.f * pi;
+	auto z = curand_uniform(rState) * 2.f - 1.f;
+	auto r = sqrtf(1.f - z * z);
+	return gvec3(r*cosf(a), r*sinf(a), z) * radius;
+}
+
+
+__device__ gvec3 inline reflect(const gvec3& i, const gvec3& n) {
+	return i + 2.f * -dot(i, n) * n;
+}
+
+// Source: https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
+__device__ gvec3 inline refract(const gvec3& i, const gvec3& n, float k1, float k2) {
+	auto k = k1 / k2;
+	auto cosi = -dot(i, n);
+	auto sin2t = k * k * (1.f - cosi * cosi);
+	return k * i + (k*cosi - sqrt(1.f - sin2t))*n;
+}
+
+// Source: https://graphics.stanford.edu/courses/cs148-10-summer/docs/2006--degreve--reflection_refraction.pdf
+__device__ float inline reflectance(const gvec3& i, const gvec3& n, float k1, float k2) {
+	auto r0 = (k1 - k2) / (k1 + k2);
+	r0 *= r0;
+	auto cosi = -dot(i, n);
+
+	// Inside medium with higher refractive index:
+	if (k1 > k2) {
+		auto k = k1 / k2;
+		auto sin2t = k * k * (1.f - cosi * cosi);
+
+		// And total internal reflectance (TIR):
+		if (sin2t > 1) {
+			return 1;
+		}
+	}
+
+	// Inside medium with lower refractive index or
+	// Inside medium with higher refractive index but below critical incidence angle (no TIR):
+	auto x = (1.f - cosi);
+	return r0 + (1.f - r0) * x * x * x * x * x;
+}
 
 struct Profiler {
   std::chrono::high_resolution_clock::time_point t0;

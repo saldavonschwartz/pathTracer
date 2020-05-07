@@ -8,16 +8,18 @@
 
 #include "HittableVector.hpp"
 
-//void HittableVector::push_back(shared_ptr<Hittable> hittable) {
-//  data.push_back(hittable);
-//}
+__device__ void HittableVector::push_back(Hittable* hittable) {
+	data[idx] = hittable;
+	idx = (idx + 1) % size;
+}
 
-bool HittableVector::boundingBox(double t0, double t1, AABA& bBox) const {
+__device__ bool HittableVector::boundingBox(double t0, double t1, AABA& bBox) const {
   bool firstTime = true;
   AABA bBoxTemp;
   
-  // TODO: 0xfede
-  for (auto& h: data) {
+  for (size_t i = 0; i < size; i++) {
+	  auto h = data[i];
+
     if (!h->boundingBox(t0, t1, bBoxTemp)) {
       return false;
     }
@@ -34,13 +36,14 @@ bool HittableVector::boundingBox(double t0, double t1, AABA& bBox) const {
   return true;
 }
 
-bool HittableVector::hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const {
+__device__ bool HittableVector::hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const {
   float closest = tmax;
   bool hitAny = false;
   HitInfo _info;
   
-  // TODO: 0xfede
-  for (auto& h : data) {
+	for (size_t i = 0; i < size; i++) {
+		auto h = data[i];
+
     if (h->hit(ray, tmin, closest, _info)) {
       closest = _info.t;
       hitAny = true;
@@ -54,3 +57,10 @@ bool HittableVector::hit(const Ray& ray, float tmin, float tmax, HitInfo& info) 
   return hitAny;
 }
 
+__device__ HittableVector::~HittableVector() {
+	for (int i = 0; i < size; i++) {
+		delete data[i];
+	}
+
+	size = idx = 0;
+}

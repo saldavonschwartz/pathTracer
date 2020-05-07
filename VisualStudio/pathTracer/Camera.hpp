@@ -22,9 +22,12 @@ public:
   float aperture;
   float fovy;
 
-  __host__ __device__ Camera(const gvec3& position, const gvec3& lookAt, float fovy, float aspectRatio, float focalLength, float aperture);
+  __device__ Camera(
+		const gvec3& position, const gvec3& lookAt, 
+		float fovy, float aspectRatio, float focalLength, float aperture
+	);
   
-  __host__ __device__ Ray castRay(float u, float v) const;
+  __device__ Ray castRay(float u, float v, curandState* rState) const;
 
 private:
   float hh, hw;

@@ -11,6 +11,11 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
+
+#include "cuda_runtime.h"
+#include "device_launch_parameters.h"
+#include "curand_kernel.h"
+
 #include "Utils.hpp"
 #include "Ray.hpp"
 #include "Scene.hpp"
@@ -18,25 +23,12 @@
 #include "Camera.hpp"
 #include "HittableVector.hpp"
 #include "BVH.hpp"
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
 
 using std::ofstream;
 using std::string;
 using std::cerr;
 
-#define CHK_CUDA(val) check_cuda( (val), #val, __FILE__, __LINE__ )
-
-void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line) {
-	if (result) {
-		std::cerr << "CUDA error = " << static_cast<unsigned int>(result) << " at " <<
-			file << ":" << line << " '" << func << "' \n";
-		cudaDeviceReset();
-		exit(-1);
-	}
-}
-
-__host__ __device__ gvec3 sampleRay(Ray ray, float tmin, float tmax, int maxBounces, const Hittable& hittable) {
+__device__ gvec3 sampleRay(Ray ray, float tmin, float tmax, int maxBounces, const Hittable& hittable,  curandState* rState) {
 	gvec3 color{1.f};
 	gvec3 attenuation;
 
@@ -44,7 +36,7 @@ __host__ __device__ gvec3 sampleRay(Ray ray, float tmin, float tmax, int maxBoun
 		Hittable::HitInfo info;
 
 		if (hittable.hit(ray, tmin, tmax, info)) {		
-			if (info.material->scatter(ray, info, attenuation, ray)) {
+			if (info.material->scatter(ray, info, attenuation, ray, rState)) {
 				color *= attenuation;
 				maxBounces -= 1;
 			}
@@ -63,8 +55,7 @@ __host__ __device__ gvec3 sampleRay(Ray ray, float tmin, float tmax, int maxBoun
 	return color;
 }
 
-__global__
-void gpuRender(gvec3* fb, int w, int h, const Camera& cam, int maxBounces) {
+__global__ void randInit(int w, int h, curandState* randState) {
 	int x = threadIdx.x + blockIdx.x * blockDim.x;
 	int y = threadIdx.y + blockIdx.y * blockDim.y;
 
@@ -72,10 +63,44 @@ void gpuRender(gvec3* fb, int w, int h, const Camera& cam, int maxBounces) {
 		return;
 	}
 
-	float u = float(x) / w;
-	float v = float(y) / h;
 	int p = y * w + x;
-	fb[p] = sampleRay(cam.castRay(u, v), 0.f, inf, maxBounces, hittable);
+	curand_init(1984, p, 0, &randState[p]);
+}
+
+__global__ void freeScene(HittableVector* scene, Camera* cam) {
+	delete scene;
+	delete cam;
+}
+
+__global__
+void renderScene(
+	gvec3* frameBuff, int w, int h, Camera* cam, Hittable* scene, 
+	int raysPerPixel, int maxBouncesPerRay, curandState* rStates
+) 
+{
+	int x = threadIdx.x + blockIdx.x * blockDim.x;
+	int y = threadIdx.y + blockIdx.y * blockDim.y;
+
+	if (x >= w || y >= h) {
+		return;
+	}
+
+	int p = y * w + x;
+	curandState rState = rStates[p];
+	gvec3 pixel;
+
+	for (int r = 0; r < raysPerPixel; r++) {
+		float u = (x + curand_uniform(&rState)) / float(w);
+		float v = (y + curand_uniform(&rState)) / float(h);
+		Ray ray = cam->castRay(u, v, &rState);
+		pixel += sampleRay(ray, 0.001f, 10000.f, maxBouncesPerRay, *scene, &rState);
+	}
+
+	pixel /= float(raysPerPixel);
+	pixel.r = sqrt(pixel.r);
+	pixel.g = sqrt(pixel.g);
+	pixel.b = sqrt(pixel.b);
+	frameBuff[p] = 255.f * pixel;
 }
 
 int renderScene(int sceneId, string path, int width, int height, int raysPerPixel, int maxBouncesPerRay) {
@@ -88,49 +113,39 @@ int renderScene(int sceneId, string path, int width, int height, int raysPerPixe
 		return -1;
 	}
 
-	float aspectRatio = double(width) / height;
-	gvec3 lookFrom;
-	gvec3 lookAt;
-	float focalLength;
-	float aperture;
-	float fovy;
-	HittableVector sceneObjects;
-
-	if (sceneId == 1) {
-		lookFrom = { 3.f, 3.f, 2.f };
-		lookAt = { 0.f, 0.f, -1.f };
-		focalLength = length(lookFrom - lookAt);
-		aperture = 0.1f;
-		fovy = 20.f;
-		sceneObjects = generateSimpleScene();
-	}
-	else {
-		lookFrom = { 13.f, 2.f, 3.f };
-		lookAt = {};
-		focalLength = 10.f;
-		aperture = 0.1f;
-		fovy = 20.f;
-		sceneObjects = generateComplexScene();
-	}
-
-	HittableVector world;
-	Camera cam(lookFrom, lookAt, fovy, aspectRatio, focalLength, aperture);
-	BVHNode scene(sceneObjects, 0.f, 1.f);
+	float aspect = double(width) / height;
+	auto sceneCam = generateSimpleScene(aspect);
+	HittableVector* scene = sceneCam.first;
+	Camera* cam = sceneCam.second;
+	//BVHNode scene(sceneObjects, 0.f, 1.f);
 	
-	size_t fbSize = sizeof(float) * 3 * width * height;
-	gvec3* fb = nullptr;
-	CHK_CUDA(cudaMallocManaged(&fb, fbSize));
+	size_t pixelCount = width * height;
 	dim3 threads(8, 8);
 	dim3 blocks(width / threads.x + 1, height / threads.y + 1);
 
+	// Frame Buffer:
+	size_t fbSize = sizeof(float) * 3 * pixelCount;
+	gvec3* frameBuff = nullptr;
+	CHK_CUDA(cudaMallocManaged(&frameBuff, fbSize));
+	
+	// Random:
+	curandState *perPixelRand;
+	CHK_CUDA(cudaMalloc(&perPixelRand, sizeof(curandState) * pixelCount));
+	
+	randInit << <blocks, threads >> > (width, height, perPixelRand);
+	CHK_CUDA(cudaGetLastError());
+	CHK_CUDA(cudaDeviceSynchronize());
+
+	// Render:
 	{
 		auto p = Profiler("[Render Time]");
-
-		gpuRender << <blocks, threads >> > (fb, width, height, cam);
+		
+		renderScene << <blocks, threads >> > (frameBuff, width, height, cam, scene, raysPerPixel, maxBouncesPerRay, perPixelRand);
 		CHK_CUDA(cudaGetLastError());
 		CHK_CUDA(cudaDeviceSynchronize());
 	}
 
+	// Save File (CPU):
 	// Output image is in PPM 'plain' format (http://netpbm.sourceforge.net/doc/ppm.html#plainppm)
 	outputImage << "P3\n" << width << " " << height << "\n255\n";
 
@@ -139,25 +154,20 @@ int renderScene(int sceneId, string path, int width, int height, int raysPerPixe
 	
 	for (int y = height - 1; y >= 0; y--) {
 		for (int x = 0; x < width; x++) {
-			/*for (int r = 0; r < raysPerPixel; r++) {
-				float u = (x + urand(0, 1)) / float(width);
-				float v = (y + urand(0, 1)) / float(height);
-				Ray ray = cam.castRay(u, v);
-				pixel += sampleRay(ray, 0.001f, inf, maxBouncesPerRay, scene);
-			}*/
-
 			int p = y * width + x;
-			gvec3 pixel = 255.99f * fBuffer[p];
-			
-			//pixel = 255.f * glm::clamp(glm::sqrt(pixel / float(raysPerPixel)), 0.f, 1.f);
-			outputImage << int(pixel.r) << " " << int(pixel.g) << " " << int(pixel.b) << "\n";
+			gvec3 pixel = frameBuff[p];
+			outputImage 
+				<< int(pixel.r) << " " 
+				<< int(pixel.g) << " " 
+				<< int(pixel.b) << "\n";
 		}
 	}
 
-	CHK_CUDA(cudaFree(fBuffer));
+	CHK_CUDA(cudaFree(frameBuff));
 	cerr << "\n100% complete" << std::flush;
 	outputImage.close();
 	return 0;
 }
+
 
 

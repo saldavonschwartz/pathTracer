@@ -15,15 +15,15 @@
 
 class Sphere : public Hittable {
 public:
-  std::shared_ptr<Material> material;
-  float radius;
-  vec3 position;
+  Material* material;
+	gvec3 position;
+	float radius;
   
-  Sphere(vec3 position, float radius, std::shared_ptr<Material> material)
-  : position(position), radius(radius), material(material) {}
+  __device__ Sphere(gvec3 position, float radius, Material* material) 
+		: position(position), radius(radius), material(material) {}
   
-  bool boundingBox(double t0, double t1, AABA& bBox) const override;
-  bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override;
+  __device__ bool boundingBox(double t0, double t1, AABA& bBox) const override;
+  __device__ bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override;
 };
 
 

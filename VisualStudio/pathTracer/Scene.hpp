@@ -9,11 +9,11 @@
 #ifndef Scene_hpp
 #define Scene_hpp
 
-#include "cuda_runtime.h"
-#include "device_launch_parameters.h"
 #include "HittableVector.hpp"
+#include "Camera.hpp"
+#include <utility>
 
-HittableVector generateSimpleScene();
-HittableVector generateComplexScene();
+std::pair<HittableVector*, Camera*> generateSimpleScene(float aspect);
+//HittableVector generateComplexScene();
 
 #endif /* Scene_hpp */
