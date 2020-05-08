@@ -28,14 +28,14 @@ using std::ofstream;
 using std::string;
 using std::cerr;
 
-__device__ gvec3 sampleRay(Ray ray, float tmin, float tmax, int maxBounces, Hittable** hittable,  curandState* rState) {
+__device__ gvec3 sampleRay(Ray ray, float tmin, float tmax, int maxBounces, Hittable* hittable,  curandState* rState) {
 	gvec3 color{1.f};
 	gvec3 attenuation;
 
 	while (maxBounces > -1) {
 		Hittable::HitInfo info;
 
-		if ((*hittable)->hit(ray, tmin, tmax, info)) {		
+		if (hittable->hit(ray, tmin, tmax, info)) {		
 			if (info.material->scatter(ray, info, attenuation, ray, rState)) {
 				color *= attenuation;
 				maxBounces -= 1;
@@ -57,10 +57,7 @@ __device__ gvec3 sampleRay(Ray ray, float tmin, float tmax, int maxBounces, Hitt
 
 __global__ void generateSimpleScene(HittableVector** scene, Camera* cam, float aspect) {
 	*scene = new HittableVector();
-	Hittable** data = new Hittable*[5];
-	(*scene)->data = data;
-	(*scene)->size = 5;
-	
+	(*scene)->init(5);
 	(*scene)->add(new Sphere(gvec3(0.f, 0.f, -1.f), 0.5f, new Diffuse(gvec3(0.1f, 0.2f, 0.5f))));
 	(*scene)->add(new Sphere(gvec3(0.f, -100.5f, -1.f), 100.f, new Diffuse(gvec3(0.8f, 0.8f, 0.0f))));
 	(*scene)->add(new Sphere(gvec3(1.f, 0.f, -1.f), 0.5f, new Metal(gvec3(0.8f, 0.6f, 0.2f), 0.3f)));
@@ -76,16 +73,13 @@ __global__ void generateSimpleScene(HittableVector** scene, Camera* cam, float a
 }
 
 __global__ void generateSimpleScene2(HittableVector* scene, Camera* cam, float aspect) {
-	Hittable** data = new Hittable*[5];
-	data[0] = new Sphere(gvec3(0.f, 0.f, -1.f), 0.5f, new Diffuse(gvec3(0.1f, 0.2f, 0.5f)));
-	data[1] = new Sphere(gvec3(0.f, -100.5f, -1.f), 100.f, new Diffuse(gvec3(0.8f, 0.8f, 0.0f)));
-	data[2] = new Sphere(gvec3(1.f, 0.f, -1.f), 0.5f, new Metal(gvec3(0.8f, 0.6f, 0.2f), 0.3f));
-	data[3] = new Sphere(gvec3(-1.f, 0.f, -1.f), 0.5f, new Dielectric(1.5f));
-	data[4] = new Sphere(gvec3(-1.f, 0.f, -1.f), -0.45f, new Dielectric(1.5f));
-	
-	scene->data = data;
-	scene->size = 5;
-	
+	scene->init(5);
+	scene->add(new Sphere(gvec3(0.f, 0.f, -1.f), 0.5f, new Diffuse(gvec3(0.1f, 0.2f, 0.5f))));
+	scene->add(new Sphere(gvec3(0.f, -100.5f, -1.f), 100.f, new Diffuse(gvec3(0.8f, 0.8f, 0.0f))));
+	scene->add(new Sphere(gvec3(1.f, 0.f, -1.f), 0.5f, new Metal(gvec3(0.8f, 0.6f, 0.2f), 0.3f)));
+	scene->add(new Sphere(gvec3(-1.f, 0.f, -1.f), 0.5f, new Dielectric(1.5f)));
+	scene->add(new Sphere(gvec3(-1.f, 0.f, -1.f), -0.45f, new Dielectric(1.5f)));
+
 	gvec3 lookFrom = { 3.f, 3.f, 2.f };
 	gvec3 lookAt = { 0.f, 0.f, -1.f };
 	float f = length(lookFrom - lookAt);
@@ -206,6 +200,38 @@ __global__ void renderScene(
 		float u = (x + curand_uniform(&rs)) / float(w);
 		float v = (y + curand_uniform(&rs)) / float(h);
 		Ray ray = cam->castRay(u, v, &rs);
+		pixel += sampleRay(ray, 0.001f, inf, maxBouncesPerRay, *scene, &rs);
+	}
+
+	rStates[p] = rs;
+
+	pixel /= float(raysPerPixel);
+	pixel.r = sqrt(pixel.r);
+	pixel.g = sqrt(pixel.g);
+	pixel.b = sqrt(pixel.b);
+	frameBuff[p] = 255.f * pixel;
+}
+
+__global__ void renderScene2(
+	gvec3* frameBuff, int w, int h, Camera* cam, Hittable* scene,
+	int raysPerPixel, int maxBouncesPerRay, curandState* rStates
+)
+{
+	int x = threadIdx.x + blockIdx.x * blockDim.x;
+	int y = threadIdx.y + blockIdx.y * blockDim.y;
+
+	if (x >= w || y >= h) {
+		return;
+	}
+
+	int p = y * w + x;
+	curandState rs = rStates[p];
+	gvec3 pixel;
+
+	for (int r = 0; r < raysPerPixel; r++) {
+		float u = (x + curand_uniform(&rs)) / float(w);
+		float v = (y + curand_uniform(&rs)) / float(h);
+		Ray ray = cam->castRay(u, v, &rs);
 		pixel += sampleRay(ray, 0.001f, inf, maxBouncesPerRay, scene, &rs);
 	}
 
@@ -249,8 +275,8 @@ int renderScene(int sceneId, string path, int width, int height, int raysPerPixe
 
 	Camera* cam;
 	CHK_CUDA(cudaMalloc(&cam, sizeof(Camera)));
-	//generateSimpleScene << <1, 1 >> > (scene, cam, aspect);
-	generateComplexScene << <1, 1 >> > (scene, cam, aspect, sceneGenRand);
+	generateSimpleScene << <1, 1 >> > (scene, cam, aspect);
+	//generateComplexScene << <1, 1 >> > (scene, cam, aspect, sceneGenRand);
 	CHK_CUDA(cudaGetLastError());
 	CHK_CUDA(cudaDeviceSynchronize());
 	//BVHNode scene(sceneObjects, 0.f, 1.f);
