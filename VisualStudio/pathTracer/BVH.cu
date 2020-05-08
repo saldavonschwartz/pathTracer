@@ -6,9 +6,9 @@
 //  Copyright © 2020 Federico Saldarini. All rights reserved.
 //
 
-#include "BVH.hpp"
-#include <iostream>
-#include <algorithm>
+//#include "BVH.hpp"
+//#include <iostream>
+//#include <algorithm>
 
 //using std::cerr;
 //using std::make_shared;
@@ -64,7 +64,7 @@
 //    cerr << "No bounding box in BVHNode constructor.\n";
 //  }
 //  
-//  bBox = AABA::surroundingBox(bBoxLeft, bBoxRight);
+//  bBox = surroundingBox(bBoxLeft, bBoxRight);
 //}
 //
 //bool BVHNode::boundingBox(double t0, double t1, AABA& bBox) const {

@@ -9,7 +9,7 @@
 #ifndef BVH_hpp
 #define BVH_hpp
 
-#include "HittableVector.hpp"
+//#include "HittableVector.hpp"
 
 //class BVHNode : public Hittable {
 //public:

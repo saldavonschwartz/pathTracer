@@ -9,11 +9,12 @@
 #ifndef Scene_hpp
 #define Scene_hpp
 
-#include "HittableVector.hpp"
-#include "Camera.hpp"
-#include <utility>
+//#include "HittableVector.hpp"
+//
+//class HittableVector;
+//class Camera;
 
-std::pair<HittableVector*, Camera*> generateSimpleScene(float aspect);
+//void generateSimpleScene(float aspect, Hittable*** scene, Camera** cam);
 //HittableVector generateComplexScene();
 
 #endif /* Scene_hpp */

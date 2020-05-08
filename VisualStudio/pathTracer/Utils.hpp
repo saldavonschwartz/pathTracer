@@ -18,9 +18,9 @@
 
 #define CHK_CUDA(val) check_cuda( (val), #val, __FILE__, __LINE__ )
 
-void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line) {
+inline void check_cuda(cudaError_t result, char const *const func, const char *const file, int const line) {
 	if (result) {
-		std::cerr << "CUDA error = " << static_cast<unsigned int>(result) << " at " <<
+		std::cerr << "CUDA error = " << (unsigned int)result << " at " <<
 			file << ":" << line << " '" << func << "' \n";
 		cudaDeviceReset();
 		exit(-1);
@@ -28,6 +28,7 @@ void check_cuda(cudaError_t result, char const *const func, const char *const fi
 }
 
 __constant__ const float pi = 3.1415926535897932385f;
+__constant__ const float inf = std::numeric_limits<float>::infinity();
 
 class gvec3 {
 public:
@@ -48,12 +49,49 @@ public:
 	__host__ __device__ float operator[](int i) const { return e[i]; }
 	__host__ __device__ float& operator[](int i) { return e[i]; };
 
-	__host__ __device__ gvec3& operator+=(const gvec3 &v2);
-	__host__ __device__ gvec3& operator-=(const gvec3 &v2);
-	__host__ __device__ gvec3& operator*=(const gvec3 &v2);
-	__host__ __device__ gvec3& operator/=(const gvec3 &v2);
-	__host__ __device__ gvec3& operator*=(const float t);
-	__host__ __device__ gvec3& operator/=(const float t);
+	__host__ __device__ gvec3& gvec3::operator+=(const gvec3 &v) {
+		e[0] += v.e[0];
+		e[1] += v.e[1];
+		e[2] += v.e[2];
+		return *this;
+	}
+
+	__host__ __device__ gvec3& gvec3::operator*=(const gvec3 &v) {
+		e[0] *= v.e[0];
+		e[1] *= v.e[1];
+		e[2] *= v.e[2];
+		return *this;
+	}
+
+	__host__ __device__ gvec3& gvec3::operator/=(const gvec3 &v) {
+		e[0] /= v.e[0];
+		e[1] /= v.e[1];
+		e[2] /= v.e[2];
+		return *this;
+	}
+
+	__host__ __device__ gvec3& gvec3::operator-=(const gvec3& v) {
+		e[0] -= v.e[0];
+		e[1] -= v.e[1];
+		e[2] -= v.e[2];
+		return *this;
+	}
+
+	__host__ __device__ gvec3& gvec3::operator*=(const float t) {
+		e[0] *= t;
+		e[1] *= t;
+		e[2] *= t;
+		return *this;
+	}
+
+	__host__ __device__ gvec3& gvec3::operator/=(const float t) {
+		float k = 1.f / t;
+
+		e[0] *= k;
+		e[1] *= k;
+		e[2] *= k;
+		return *this;
+	}
 };
 
 inline std::istream& operator>>(std::istream &is, gvec3 &t) {
@@ -116,30 +154,41 @@ __host__ __device__ inline gvec3 normalize(const gvec3& v) {
 	return v / length(v);
 }
 
-__device__ inline gvec3 diskRand(float radius, curandState* rState) {
+#define RND (curand_uniform(rs))
+__device__ inline gvec3 diskRand(float radius, curandState* rs) {
 	gvec3 p;
 
 	do {
-		p = gvec3{ curand_uniform(rState) * 2.f - 1,  curand_uniform(rState) * 2.f - 1, 0 };
+		p = gvec3{ 
+			curand_uniform(rs) * 2.f - 1.f,  
+			curand_uniform(rs) * 2.f - 1.f,
+			0.f 
+		};
+
 	} while (dot(p, p) >= 1);
 
 	return p * radius;
 }
 
-__device__ inline gvec3 ballRand(float radius, curandState* rState) {
+__device__ inline gvec3 ballRand(float radius, curandState* rs) {
 	gvec3 p;
 
 	do {
-		p = gvec3{ curand_uniform(rState) * 2.f - 1, curand_uniform(rState) * 2.f - 1, curand_uniform(rState) * 2.f - 1 };
-	} while (dot(p, p) >= 1);
+		p = gvec3{ 
+			curand_uniform(rs) * 2.f - 1.f, 
+			curand_uniform(rs) * 2.f - 1.f, 
+			curand_uniform(rs) * 2.f - 1.f 
+		};
+
+	} while (dot(p, p) >= 1.f);
 
 	return p * radius;
 }
 
-__device__ inline gvec3 sphericalRand(float radius, curandState* rState) {
-	auto a = curand_uniform(rState) * 2.f * pi;
-	auto z = curand_uniform(rState) * 2.f - 1.f;
-	auto r = sqrtf(1.f - z * z);
+__device__ inline gvec3 sphericalRand(float radius, curandState* rs) {
+	float a = curand_uniform(rs) * 2.f * pi;
+	float z = curand_uniform(rs) * 2.f - 1.f;
+	float r = sqrtf(1.f - z * z);
 	return gvec3(r*cosf(a), r*sinf(a), z) * radius;
 }
 

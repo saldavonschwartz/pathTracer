@@ -17,17 +17,38 @@
 class Camera {
 public:
   gvec3 position;
-  float aspectRatio;
-  float focalLength;
-  float aperture;
+  float aspect;
+  float f;
+  float a;
   float fovy;
 
-  __device__ Camera(
-		const gvec3& position, const gvec3& lookAt, 
-		float fovy, float aspectRatio, float focalLength, float aperture
-	);
-  
-  __device__ Ray castRay(float u, float v, curandState* rState) const;
+	__device__ void init(const gvec3& position, const gvec3& lookAt, float fovy, float aspect, float flLength, float aperture) {
+		this->position = position;
+		this->aspect = aspect;
+		this->f = flLength;
+		this->a = aperture;
+		this->fovy = fovy;
+
+		float hh = tanf((fovy * (pi / 180.f) / 2.f));
+		float hw = aspect * hh;
+
+		// [x y z p] = new camera orientation:
+		gvec3 z = normalize(position - lookAt);
+		x = normalize(cross({ 0.f, 1.f, 0.f }, z));
+		y = cross(z, x);
+
+		auto& f = flLength;
+		lowerLeftImageOrigin = position - x * hw*f - y * hh*f - z * f;
+		hOffset = 2 * hh*f*y;
+		wOffset = 2 * hw*f*x;
+	}
+
+	__device__ Ray castRay(float u, float v, curandState* rs) const {
+		auto r = (a / 2.f) * diskRand(1.f, rs);
+		auto offset = x * r.x + y * r.y;
+		auto dir = lowerLeftImageOrigin + u * wOffset + v * hOffset - position - offset;
+		return { position + offset, dir };
+	}
 
 private:
   float hh, hw;
