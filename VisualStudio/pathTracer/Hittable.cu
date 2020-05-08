@@ -24,34 +24,34 @@
 //	return {small, big};
 //}
 
-__device__ bool AABA::hit(const Ray& ray, float tmin, float tmax) const {
-	// TODO: 0xfede
-  /*auto xminIntersect = (xmin - ray.origin) / ray.dir;
-  auto xmaxIntersect = (xmax - ray.origin) / ray.dir;
-  auto t0 = min(xminIntersect, xmaxIntersect);
-  auto t1 = max(xminIntersect, xmaxIntersect);
-  tmin = compMax(gvec4(t0, tmin));
-  tmax = compMin(gvec4(t1, tmax));
-  return tmin < tmax;*/
-
-	for (int a = 0; a < 3; a++) {
-		auto invD = 1.0f / ray.dir[a];
-		auto t0 = (xmin[a] - ray.origin[a]) * invD;
-		auto t1 = (xmax[a] - ray.origin[a]) * invD;
-		
-		if (invD < 0.0f) {
-			auto tn = t0;
-			t0 = t1;
-			t1 = tn;
-		}
-
-		tmin = t0 > tmin ? t0 : tmin;
-		tmax = t1 < tmax ? t1 : tmax;
-		
-		if (tmax <= tmin) {
-			return false;
-		}
-	}
-
-	return true;
-}
+//__device__ bool AABA::hit(const Ray& ray, float tmin, float tmax) const {
+//	// TODO: 0xfede
+//  /*auto xminIntersect = (xmin - ray.origin) / ray.dir;
+//  auto xmaxIntersect = (xmax - ray.origin) / ray.dir;
+//  auto t0 = min(xminIntersect, xmaxIntersect);
+//  auto t1 = max(xminIntersect, xmaxIntersect);
+//  tmin = compMax(gvec4(t0, tmin));
+//  tmax = compMin(gvec4(t1, tmax));
+//  return tmin < tmax;*/
+//
+//	for (int a = 0; a < 3; a++) {
+//		auto invD = 1.0f / ray.dir[a];
+//		auto t0 = (xmin[a] - ray.origin[a]) * invD;
+//		auto t1 = (xmax[a] - ray.origin[a]) * invD;
+//		
+//		if (invD < 0.0f) {
+//			auto tn = t0;
+//			t0 = t1;
+//			t1 = tn;
+//		}
+//
+//		tmin = t0 > tmin ? t0 : tmin;
+//		tmax = t1 < tmax ? t1 : tmax;
+//		
+//		if (tmax <= tmin) {
+//			return false;
+//		}
+//	}
+//
+//	return true;
+//}

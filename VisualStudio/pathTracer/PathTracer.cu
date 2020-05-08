@@ -72,10 +72,24 @@ __global__ void generateSimpleScene(HittableVector** scene, Camera* cam, float a
 	cam->init(lookFrom, lookAt, fovy, aspect, f, a);
 }
 
+__global__ void generateSimpleScene2(HittableVector* scene, Camera* cam, float aspect) {
+	scene->init(5);
+	scene->add(new Sphere(gvec3(0.f, 0.f, -1.f), 0.5f, new Diffuse(gvec3(0.1f, 0.2f, 0.5f))));
+	scene->add(new Sphere(gvec3(0.f, -100.5f, -1.f), 100.f, new Diffuse(gvec3(0.8f, 0.8f, 0.0f))));
+	scene->add(new Sphere(gvec3(1.f, 0.f, -1.f), 0.5f, new Metal(gvec3(0.8f, 0.6f, 0.2f), 0.3f)));
+	scene->add(new Sphere(gvec3(-1.f, 0.f, -1.f), 0.5f, new Dielectric(1.5f)));
+	scene->add(new Sphere(gvec3(-1.f, 0.f, -1.f), -0.45f, new Dielectric(1.5f)));
 
-#define RND (curand_uniform(&rs))
+	gvec3 lookFrom = { 3.f, 3.f, 2.f };
+	gvec3 lookAt = { 0.f, 0.f, -1.f };
+	float f = length(lookFrom - lookAt);
+	float a = 0.1f;
+	float fovy = 20.f;
+	cam->init(lookFrom, lookAt, fovy, aspect, f, a);
+}
 
-__global__ void generateComplexScene(HittableVector** scene, Camera* cam, float aspect, curandState* rState) {
+__global__ void generateComplexScene(
+	BVHNode** bvh, HittableVector** scene, Camera* cam, float aspect, curandState* rState) {
 	if (threadIdx.x != 0 || blockIdx.x != 0) {
 		return;
 	}
@@ -100,15 +114,13 @@ __global__ void generateComplexScene(HittableVector** scene, Camera* cam, float 
 			if (length(center - gvec3{ 4.f, 0.2f, 0.f }) > 0.9f) {
 				if (materialProbability < 0.8f) {
 					// Diffuse
-					//auto albedo = sphericalRand(1.f, &rs) * sphericalRand(1.f, &rs);
-					gvec3 albedo(RND*RND, RND*RND, RND*RND);
+					gvec3 albedo = urand3(&rs) * urand3(&rs);
 					(*scene)->add(new Sphere(center, 0.2f, new Diffuse(albedo)));
 				}
 				else if (materialProbability < 0.95f) {
 					// Metal
-					//auto albedo = sphericalRand(&rs) * 0.5f + 0.5f;
-					gvec3 albedo(0.5f * (1.f + RND * RND), 0.5f * (1.f + RND * RND), 0.5f * (1.f + RND * RND));
-					auto fuzziness = curand_uniform(&rs);
+					gvec3 albedo = (urand3(&rs) + 1.f) * 0.5f;
+					auto fuzziness = curand_uniform(&rs) * 0.5f;
 					(*scene)->add(new Sphere(center, 0.2f, new Metal(albedo, fuzziness)));
 				}
 				else {
@@ -118,7 +130,8 @@ __global__ void generateComplexScene(HittableVector** scene, Camera* cam, float 
 			}
 		}
 	}
-
+	
+	//*bvh = new BVHNode(*scene, 0.f, 1.f, &rs);
 	*rState = rs;
 
 	gvec3 lookFrom = { 13.f, 2.f, 3.f };
@@ -215,13 +228,16 @@ int renderScene(int sceneId, string path, int width, int height, int raysPerPixe
 
 	// Generate scene + camera:
 	HittableVector** scene;
-	CHK_CUDA(cudaMalloc(&scene, sizeof(HittableVector)));
+	CHK_CUDA(cudaMalloc(&scene, sizeof(HittableVector*)));
+
+	BVHNode** bvh;
+	CHK_CUDA(cudaMalloc(&bvh, sizeof(BVHNode*)));
 
 	Camera* cam;
 	CHK_CUDA(cudaMalloc(&cam, sizeof(Camera)));
 
-	// generateSimpleScene << <1, 1 >> > (scene, cam, aspect);
-	generateComplexScene << <1, 1 >> > (scene, cam, aspect, sceneGenRand);
+	 //generateSimpleScene2 << <1, 1 >> > (scene, cam, aspect);
+	generateComplexScene << <1, 1 >> > (bvh, scene, cam, aspect, sceneGenRand);
 	CHK_CUDA(cudaGetLastError());
 	CHK_CUDA(cudaDeviceSynchronize());
 	//BVHNode scene(sceneObjects, 0.f, 1.f);

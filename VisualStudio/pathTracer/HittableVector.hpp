@@ -17,18 +17,17 @@ class HittableVector : public Hittable {
 public:
 	Hittable** data = nullptr;
 	size_t size = 0;
-	size_t idx = 0;
-
+	size_t capacity = 0;
+	
 	__device__ HittableVector() {}
 
-	__device__ void init(size_t size) {
-		this->size = size;
-		this->data = new Hittable*[size];
+	__device__ void init(size_t capacity) {
+		this->capacity = capacity;
+		this->data = new Hittable*[capacity];
 	}
   
 	__device__ void HittableVector::add(Hittable* hittable) {
-		data[idx] = hittable;
-		idx = (idx + 1) % size;
+		data[size++] = hittable;
 	}
 
 	__device__ bool boundingBox(double t0, double t1, AABA& bBox) const override {
@@ -62,10 +61,6 @@ public:
 		for (size_t i = 0; i < size; i++) {
 			auto h = data[i];
 
-			if (!h) {
-				continue;
-			}
-
 			if (h->hit(ray, tmin, closest, _info)) {
 				closest = _info.t;
 				hitAny = true;
@@ -81,7 +76,7 @@ public:
 
 	__device__ HittableVector::~HittableVector() override {
 		delete[] data;
-		size = idx = 0;
+		size = capacity = 0;
 	}
 };
 

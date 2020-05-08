@@ -23,7 +23,29 @@ public:
   //__device__ static AABA surroundingBox(const AABA& bBox0, const AABA& bBox1);
   __device__ AABA() {};
   __device__ AABA(gvec3 xmin, gvec3 xmax) : xmin(xmin), xmax(xmax) {}
-  __device__ bool hit(const Ray& ray, float tmin, float tmax) const;
+  __device__ bool hit(const Ray& ray, float tmin, float tmax) const {
+		for (int a = 0; a < 3; a++) {
+			auto invD = 1.0f / ray.dir[a];
+			auto t0 = (xmin[a] - ray.origin[a]) * invD;
+			auto t1 = (xmax[a] - ray.origin[a]) * invD;
+
+			if (invD < 0.0f) {
+				auto tn = t0;
+				t0 = t1;
+				t1 = tn;
+			}
+
+			tmin = t0 > tmin ? t0 : tmin;
+			tmax = t1 < tmax ? t1 : tmax;
+
+			if (tmax <= tmin) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 };
 
 __device__ inline AABA surroundingBox(const AABA& b0, const AABA& b1) {

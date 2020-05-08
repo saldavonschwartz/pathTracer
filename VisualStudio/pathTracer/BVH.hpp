@@ -19,9 +19,7 @@ public:
   Hittable* left;
   AABA bBox;
 
-	__device__ void sillySort(
-		Hittable** data, int s, int e, 
-		nvstd::function<bool((const Hittable*, const Hittable*))> cmp) {
+	__device__ void sillySort(Hittable** data, int s, int e, nvstd::function<bool((const Hittable*, const Hittable*))> cmp) {
 		for (int i = s; i < e; i++) {
 			int j = i;
 
@@ -37,8 +35,8 @@ public:
 		}
 	}
 
-  __device__ BVHNode(HittableVector list, float t0, float t1, curandState* rs)
-  : BVHNode(list.data, 0, list.size, t0, t1, rs) {}
+  __device__ BVHNode(HittableVector* list, float t0, float t1, curandState* rs)
+  : BVHNode(list->data, 0, list->size, t0, t1, rs) {}
   
 	__device__ BVHNode(Hittable** objects, size_t start, size_t end, float t0, float t1, curandState* rs) {
 		int axis = ceilf(curand_uniform(rs) * 3);
@@ -94,12 +92,12 @@ public:
 		bBox = surroundingBox(bBoxLeft, bBoxRight);
 	}
 
-	__device__ bool BVHNode::boundingBox(double t0, double t1, AABA& bBox) const override {
+	__device__ bool boundingBox(double t0, double t1, AABA& bBox) const override {
 		bBox = this->bBox;
 		return true;
 	}
 
-	__device__ bool BVHNode::hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override {
+	__device__ bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override {
 		if (!bBox.hit(ray, tmin, tmax)) {
 			return false;
 		}

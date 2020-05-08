@@ -191,6 +191,14 @@ __device__ inline gvec3 sphericalRand(float radius, curandState* rs) {
 	return gvec3(r*cosf(a), r*sinf(a), z) * radius;
 }
 
+__device__ inline gvec3 urand3(curandState* rs) {
+	return {
+		curand_uniform(rs),
+		curand_uniform(rs),
+		curand_uniform(rs)
+	};
+}
+
 __device__ gvec3 inline reflect(const gvec3& i, const gvec3& n) {
 	return i + 2.f * -dot(i, n) * n;
 }
