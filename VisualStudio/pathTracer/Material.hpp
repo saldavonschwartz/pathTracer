@@ -32,7 +32,7 @@ public:
 		: albedo(albedo) {}
 
 	__device__ bool scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rs) const override {
-		gvec3 scatterDir = info.normal + gvec3(RND*RND, RND*RND, RND*RND);// sphericalRand(1.f, rs);
+		gvec3 scatterDir = info.normal + sphericalRand(1.f, rs);
 		scattered = Ray(info.hitPoint, scatterDir);
 		attenuation = albedo;
 		return true;
@@ -49,7 +49,7 @@ public:
 	
 	__device__ bool scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rs) const override {
 		gvec3 scatterDir = reflect(ray.dir, info.normal);
-		scattered = Ray(info.hitPoint, scatterDir + fuzziness * gvec3(RND*RND, RND*RND, RND*RND)); //ballRand(1.f, rs));
+		scattered = Ray(info.hitPoint, scatterDir + fuzziness * ballRand(1.f, rs));
 		attenuation = albedo;
 		return dot(scattered.dir, info.normal) > 0.f;
 	}

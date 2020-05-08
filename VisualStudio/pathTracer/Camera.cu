@@ -9,6 +9,7 @@
 #include "Camera.hpp"
 #include "Utils.hpp"
 
+
 //__device__ Camera::Camera(const gvec3& position, const gvec3& lookAt, float fovy, float aspectRatio, float focalLength, float aperture)
 //: position(position), fovy(fovy), aspectRatio(aspectRatio), focalLength(focalLength), aperture(aperture) {
 //  float hh = tanf((fovy * (pi/180.f)/2.f));

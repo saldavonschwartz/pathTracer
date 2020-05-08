@@ -7,10 +7,6 @@
 //
 
 #include "Utils.hpp"
-#include "math_functions.h"
-
-
-
 
 //inline gvec3& gvec3::operator+=(const gvec3 &v) {
 //	e[0] += v.e[0];

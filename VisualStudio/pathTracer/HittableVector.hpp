@@ -62,6 +62,10 @@ public:
 		for (size_t i = 0; i < size; i++) {
 			auto h = data[i];
 
+			if (!h) {
+				continue;
+			}
+
 			if (h->hit(ray, tmin, closest, _info)) {
 				closest = _info.t;
 				hitAny = true;
@@ -75,11 +79,8 @@ public:
 		return hitAny;
 	}
 
-	__device__ HittableVector::~HittableVector() {
-		for (int i = 0; i < size; i++) {
-			delete data[i];
-		}
-
+	__device__ HittableVector::~HittableVector() override {
+		delete[] data;
 		size = idx = 0;
 	}
 };

@@ -49,42 +49,42 @@ public:
 	__host__ __device__ float operator[](int i) const { return e[i]; }
 	__host__ __device__ float& operator[](int i) { return e[i]; };
 
-	__host__ __device__ gvec3& gvec3::operator+=(const gvec3 &v) {
+	__host__ __device__ gvec3& operator+=(const gvec3 &v) {
 		e[0] += v.e[0];
 		e[1] += v.e[1];
 		e[2] += v.e[2];
 		return *this;
 	}
 
-	__host__ __device__ gvec3& gvec3::operator*=(const gvec3 &v) {
+	__host__ __device__ gvec3& operator*=(const gvec3 &v) {
 		e[0] *= v.e[0];
 		e[1] *= v.e[1];
 		e[2] *= v.e[2];
 		return *this;
 	}
 
-	__host__ __device__ gvec3& gvec3::operator/=(const gvec3 &v) {
+	__host__ __device__ gvec3& operator/=(const gvec3 &v) {
 		e[0] /= v.e[0];
 		e[1] /= v.e[1];
 		e[2] /= v.e[2];
 		return *this;
 	}
 
-	__host__ __device__ gvec3& gvec3::operator-=(const gvec3& v) {
+	__host__ __device__ gvec3& operator-=(const gvec3& v) {
 		e[0] -= v.e[0];
 		e[1] -= v.e[1];
 		e[2] -= v.e[2];
 		return *this;
 	}
 
-	__host__ __device__ gvec3& gvec3::operator*=(const float t) {
+	__host__ __device__ gvec3& operator*=(const float t) {
 		e[0] *= t;
 		e[1] *= t;
 		e[2] *= t;
 		return *this;
 	}
 
-	__host__ __device__ gvec3& gvec3::operator/=(const float t) {
+	__host__ __device__ gvec3& operator/=(const float t) {
 		float k = 1.f / t;
 
 		e[0] *= k;
@@ -154,7 +154,6 @@ __host__ __device__ inline gvec3 normalize(const gvec3& v) {
 	return v / length(v);
 }
 
-#define RND (curand_uniform(rs))
 __device__ inline gvec3 diskRand(float radius, curandState* rs) {
 	gvec3 p;
 
@@ -188,10 +187,9 @@ __device__ inline gvec3 ballRand(float radius, curandState* rs) {
 __device__ inline gvec3 sphericalRand(float radius, curandState* rs) {
 	float a = curand_uniform(rs) * 2.f * pi;
 	float z = curand_uniform(rs) * 2.f - 1.f;
-	float r = sqrtf(1.f - z * z);
+	float r = sqrtf(1.f - float(z * z));
 	return gvec3(r*cosf(a), r*sinf(a), z) * radius;
 }
-
 
 __device__ gvec3 inline reflect(const gvec3& i, const gvec3& n) {
 	return i + 2.f * -dot(i, n) * n;
@@ -238,8 +236,8 @@ struct Profiler {
   ~Profiler() {
     auto diff = std::chrono::high_resolution_clock::now() - t0;
     std::cout << "\n" << name << ": "
-    << std::chrono::duration_cast<std::chrono::minutes>(diff).count()
-    << " min."
+    << std::chrono::duration_cast<std::chrono::seconds>(diff).count()
+    << " sec."
     << std::endl;
   }
 };

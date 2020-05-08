@@ -22,7 +22,11 @@ public:
   float a;
   float fovy;
 
-	__device__ void init(const gvec3& position, const gvec3& lookAt, float fovy, float aspect, float flLength, float aperture) {
+	__device__ void init(
+		const gvec3& position, const gvec3& lookAt, float fovy, 
+		float aspect, float flLength, float aperture
+	) 
+	{
 		this->position = position;
 		this->aspect = aspect;
 		this->f = flLength;

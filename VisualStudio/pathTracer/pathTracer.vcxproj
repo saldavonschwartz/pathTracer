@@ -15,7 +15,7 @@
     <CudaCompile Include="Camera.cu" />
     <CudaCompile Include="Hittable.cu" />
     <CudaCompile Include="HittableVector.cu" />
-    <CudaCompile Include="main.cu" />
+    <CudaCompile Include="main.cpp" />
     <CudaCompile Include="Material.cu" />
     <CudaCompile Include="PathTracer.cu" />
     <CudaCompile Include="Ray.cu" />
@@ -32,6 +32,7 @@
     <ClInclude Include="PathTracer.hpp" />
     <ClInclude Include="Ray.hpp" />
     <ClInclude Include="Scene.hpp" />
+    <ClInclude Include="scratch.cuh" />
     <ClInclude Include="Sphere.hpp" />
     <ClInclude Include="Utils.hpp" />
   </ItemGroup>

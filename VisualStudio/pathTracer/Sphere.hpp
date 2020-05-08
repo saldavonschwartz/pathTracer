@@ -22,6 +22,10 @@ public:
   __device__ Sphere(gvec3 position, float radius, Material* material) 
 		: position(position), radius(radius), material(material) {}
   
+	__device__ ~Sphere() override {
+		delete material;
+	}
+
 	__device__ bool boundingBox(double t0, double t1, AABA& bBox) const override {
 		gvec3 extent{ radius };
 		bBox = AABA(position - extent, position + extent);
