@@ -116,6 +116,7 @@ c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\crt\host_config
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\crt\host_defines.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\crt\math_functions.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\crt\math_functions.hpp
+c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\crt\nvfunctional
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\crt\sm_70_rt.h
 C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\cuda.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\cuda_device_runtime_api.h
@@ -144,6 +145,7 @@ c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\device_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\driver_functions.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\driver_types.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\library_types.h
+C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\include\nvfunctional
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\sm_20_atomic_functions.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\sm_20_intrinsics.h
 c:\program files\nvidia gpu computing toolkit\cuda\v10.2\include\sm_30_intrinsics.h

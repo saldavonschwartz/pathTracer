@@ -89,7 +89,7 @@ public:
 			printf("No bounding box in BVHNode constructor.\n");
 		}
   
-		bBox = surroundingBox(bBoxLeft, bBoxRight);
+		bBox = AABA::surroundingBox(bBoxLeft, bBoxRight);
 	}
 
 	__device__ bool boundingBox(double t0, double t1, AABA& bBox) const override {

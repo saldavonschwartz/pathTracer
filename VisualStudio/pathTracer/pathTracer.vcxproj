@@ -32,7 +32,6 @@
     <ClInclude Include="PathTracer.hpp" />
     <ClInclude Include="Ray.hpp" />
     <ClInclude Include="Scene.hpp" />
-    <ClInclude Include="scratch.cuh" />
     <ClInclude Include="Sphere.hpp" />
     <ClInclude Include="Utils.hpp" />
   </ItemGroup>
@@ -84,6 +83,7 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -105,6 +105,7 @@
     </Link>
     <CudaCompile>
       <TargetMachinePlatform>64</TargetMachinePlatform>
+      <GenerateRelocatableDeviceCode>true</GenerateRelocatableDeviceCode>
     </CudaCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -236,11 +236,15 @@ int renderScene(int sceneId, string path, int width, int height, int raysPerPixe
 	Camera* cam;
 	CHK_CUDA(cudaMalloc(&cam, sizeof(Camera)));
 
-	 //generateSimpleScene2 << <1, 1 >> > (scene, cam, aspect);
-	generateComplexScene << <1, 1 >> > (bvh, scene, cam, aspect, sceneGenRand);
+	if (sceneId == 1) {
+		generateSimpleScene << <1, 1 >> > (scene, cam, aspect);
+	}
+	else {
+		generateComplexScene << <1, 1 >> > (bvh, scene, cam, aspect, sceneGenRand);
+	}
+
 	CHK_CUDA(cudaGetLastError());
 	CHK_CUDA(cudaDeviceSynchronize());
-	//BVHNode scene(sceneObjects, 0.f, 1.f);
 	
 	// alloc frame buffer:
 	gvec3* fBuffer;

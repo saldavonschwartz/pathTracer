@@ -10,7 +10,6 @@
 #define HittableVector_hpp
 
 #include "cuda_runtime.h"
-#include "device_launch_parameters.h"
 #include "Hittable.hpp"
 
 class HittableVector : public Hittable {
@@ -19,65 +18,12 @@ public:
 	size_t size = 0;
 	size_t capacity = 0;
 	
-	__device__ HittableVector() {}
-
-	__device__ void init(size_t capacity) {
-		this->capacity = capacity;
-		this->data = new Hittable*[capacity];
-	}
-  
-	__device__ void HittableVector::add(Hittable* hittable) {
-		data[size++] = hittable;
-	}
-
-	__device__ bool boundingBox(double t0, double t1, AABA& bBox) const override {
-		bool firstTime = true;
-		AABA bBoxTemp;
-
-		for (size_t i = 0; i < size; i++) {
-			auto h = data[i];
-
-			if (!h->boundingBox(t0, t1, bBoxTemp)) {
-				return false;
-			}
-
-			if (firstTime) {
-				firstTime = false;
-				bBox = bBoxTemp;
-			}
-			else {
-				bBox = surroundingBox(bBox, bBoxTemp);
-			}
-		}
-
-		return true;
-	}
-
-	__device__ bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override {
-		float closest = tmax;
-		bool hitAny = false;
-		HitInfo _info;
-
-		for (size_t i = 0; i < size; i++) {
-			auto h = data[i];
-
-			if (h->hit(ray, tmin, closest, _info)) {
-				closest = _info.t;
-				hitAny = true;
-			}
-		}
-
-		if (hitAny) {
-			info = _info;
-		}
-
-		return hitAny;
-	}
-
-	__device__ HittableVector::~HittableVector() override {
-		delete[] data;
-		size = capacity = 0;
-	}
+	__device__ HittableVector();
+	__device__ ~HittableVector() override;
+	__device__ void init(size_t capacity);
+	__device__ void add(Hittable* hittable);
+	__device__ bool boundingBox(double t0, double t1, AABA& bBox) const override;
+	__device__ bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override;
 };
 
 
