@@ -8,36 +8,13 @@
 
 #include "BVH.hpp"
 #include "HittableVector.hpp"
-
-__device__ bool cmp(int axis, Hittable* h1, Hittable* h2) {
-	AABA bBox1;
-	AABA bBox2;
-
-	if (!h1->boundingBox(0, 0, bBox1) || !h2->boundingBox(0, 0, bBox2)) {
-		printf("No bounding box in BVHNode constructor.\n");
-	}
-
-	return bBox1.xmin[axis] < bBox2.xmin[axis];
-}
-
-__device__ void BVHNode::sillySort(Hittable** data, int s, int e, int axis) {
-	for (int i = s; i < e; i++) {
-		int j = i;
-
-		for (int k = i + 1; k < e; k++) {
-			if (cmp(axis, data[k], data[j])) {
-				j = k;
-			}
-		}
-
-		Hittable* temp = data[i];
-		data[i] = data[j];
-		data[j] = temp;
-	}
-}
+#include "thrust/sort.h"
+#include "nvfunctional"
 
 __device__ BVHNode::BVHNode(HittableVector* objects, float t0, float t1, curandState* rs) {
+	// Replacing the original recursive building of the BVH with the iterative 'init':
 	init(objects->data, 0, objects->size - 1, t0, t1, rs);
+	
 	/*int axis = ceilf(curand_uniform(rs) * 3);
 	int objectsLeft = end - start;
 	
@@ -82,16 +59,32 @@ struct NodeInfo {
 	BVHNode* bvh;
 };
 
+// This is an iterative implementation of post-order traversal, for building the BVH:
 __device__ void BVHNode::init(Hittable** objects, int start, int end, float t0, float t1, curandState* rs) {
-	auto next = [this, objects, rs] __device__ (NodeInfo n, NodeInfo * stack, int&  i) {
+	int axis = 0;
+
+	// Comparator to sort scene objects by bounding box:
+	auto cmp = [&axis] __device__(Hittable* h1, Hittable* h2) {
+		AABA bBox1;
+		AABA bBox2;
+
+		if (!h1->boundingBox(0, 0, bBox1) || !h2->boundingBox(0, 0, bBox2)) {
+			printf("No bounding box in BVHNode constructor.\n");
+		}
+
+		return bBox1.xmin[axis] < bBox2.xmin[axis];
+	};
+
+	// Post-order traversal stack-pushing strategy:
+	auto next = [this, objects, rs, cmp, &axis] __device__ (NodeInfo n, NodeInfo * stack, int&  i) {
 		bool done = false;
 
 		while (!done) {
 			int objectsLeft = n.e - n.s;
 
 			if (objectsLeft > 2) {
-				int axis = ceilf(curand_uniform(rs) * 3);
-				sillySort(objects, n.s, n.e, axis);
+				axis = ceilf(curand_uniform(rs) * 3);
+				thrust::sort(objects + n.s, objects + n.e, cmp);
 				int mid = n.s + objectsLeft / 2;
 				n.bvh->right = new BVHNode();
 				n.bvh->left = new BVHNode();
@@ -129,9 +122,9 @@ __device__ void BVHNode::init(Hittable** objects, int start, int end, float t0, 
 		}
 
 		case 2: {
-			int axis = ceilf(curand_uniform(rs) * 3);
+			axis = ceilf(curand_uniform(rs) * 3);
 			
-			if (cmp(axis, objects[n.s], objects[n.s + 1])) {
+			if (cmp(objects[n.s], objects[n.s + 1])) {
 				n.bvh->left = objects[n.s];
 				n.bvh->right = objects[n.s + 1];
 			}

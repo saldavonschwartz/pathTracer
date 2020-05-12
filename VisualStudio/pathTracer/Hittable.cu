@@ -24,8 +24,6 @@ __device__ AABA AABA::surroundingBox(const AABA& b0, const AABA& b1) {
 	return { small, big };
 }
 
-__device__ AABA::AABA() {};
-
 __device__ AABA::AABA(gvec3 xmin, gvec3 xmax) : xmin(xmin), xmax(xmax) {}
 
 __device__ bool AABA::hit(const Ray& ray, float tmin, float tmax) const {

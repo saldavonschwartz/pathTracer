@@ -42,9 +42,7 @@
 __global__ void _generateScene(BVHNode** bvh, Camera* cam, float aspect, curandState* rs) {
 	int x = 10, y = 10;
 	int capacity = ((x * 2) * (y * 2)) + 4;
-
-	HittableVector scene;
-	scene.init(capacity);
+	HittableVector scene(capacity);
 
 	scene.add(new Sphere(gvec3{ 0.f,-1000.f,0.f }, 1000.f, new Diffuse(gvec3{ 0.5f })));
 	scene.add(new Sphere(gvec3{ 0.f, 1.f, 0.f }, 1.f, new Dielectric(1.5f)));

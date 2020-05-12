@@ -8,8 +8,6 @@
 
 #include "Ray.hpp"
 
-__device__  Ray::Ray() {};
-
 __device__  Ray::Ray(const gvec3& origin, const gvec3& dir)
 	: origin(origin), dir(normalize(dir)) {}
 

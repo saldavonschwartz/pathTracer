@@ -16,11 +16,12 @@ class Material;
 
 class AABA {
 public:
-  gvec3 xmin;
-  gvec3 xmax;
+  gvec3 xmin = {0.f};
+  gvec3 xmax = {0.f};
   
   __device__ static AABA surroundingBox(const AABA& bBox0, const AABA& bBox1);
-	__device__ AABA();
+  
+  __device__ AABA() {};
 	__device__ AABA(gvec3 xmin, gvec3 xmax);
 	__device__ bool hit(const Ray& ray, float tmin, float tmax) const;
 };
@@ -28,11 +29,11 @@ public:
 class Hittable {
 public:
   struct HitInfo {
-    gvec3 hitPoint{0.f};
-    gvec3 normal{0.f};
+    gvec3 hitPoint = {0.f};
+    gvec3 normal = {0.f};
     bool isFrontFace = false;
-    float t = 0;
-    Material* material;
+    float t = 0.f;
+    Material* material = nullptr;
   };
   
   __device__ virtual bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const = 0;

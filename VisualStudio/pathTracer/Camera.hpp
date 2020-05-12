@@ -15,11 +15,11 @@
 
 class Camera {
 public:
-  gvec3 position;
-  float aspect;
-  float f;
-  float a;
-  float fovy;
+  gvec3 position = {0.f};
+  float aspect = 0.f;
+  float f = 0.f;
+  float a = 0.f;
+  float fovy = 0.f;
 
 	__device__ void init(const gvec3& position, const gvec3& lookAt, float fovy, float aspect, float flLength, float aperture);
 	__device__ Ray castRay(float u, float v, curandState* rs) const;

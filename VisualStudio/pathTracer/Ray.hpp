@@ -13,10 +13,10 @@
 
 class Ray {
 public:
-  gvec3 origin;
-  gvec3 dir;
+	gvec3 origin = {0.f};
+	gvec3 dir = {0.f};
 
-	__device__  Ray();
+	__device__  Ray() {};
 	__device__  Ray(const gvec3& origin, const gvec3& dir);
 	__device__ gvec3 operator()(float t) const;
 };

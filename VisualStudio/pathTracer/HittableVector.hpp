@@ -14,10 +14,11 @@
 
 class HittableVector : public Hittable {
 public:
-	Hittable** data = nullptr;
-	int capacity = 0;
-	int size = 0;
+	Hittable** data;
+	int capacity;
+	int size;
 
+	__device__ HittableVector(int capacity);
 	__device__ ~HittableVector() override;
 	__device__ void init(int capacity);
 	__device__ void add(Hittable* hittable);

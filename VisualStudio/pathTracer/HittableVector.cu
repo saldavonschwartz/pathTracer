@@ -8,6 +8,10 @@
 
 #include "HittableVector.hpp"
 
+__device__ HittableVector::HittableVector(int capacity) {
+	init(capacity);
+}
+
 __device__ void HittableVector::init(int capacity) {
 	this->capacity = capacity;
 	this->size = 0;
