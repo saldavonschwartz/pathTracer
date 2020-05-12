@@ -1,9 +1,9 @@
 Path Tracer
 ===========
 
-This is a work-in-progress implementation of a path tracer, largely based on Peter Shirley's *Ray Tracing in One Weekend* series of tutorials plus other resources.
+This is a **work-in-progress** implementation of a path tracer, largely based on Peter Shirley’s Ray Tracing in One Weekend series of tutorials plus other resources.
 
-It currently runs on MacOS and is CPU only. However the plan is to add CUDA support (perhaps Vulkan and/or Metal too) as well as to continue extending its features.
+The current implementation features diffuse, metallic and dielectric materials and scene partitioning by bounding volume hierarchies. The project currently runs on MacOS (CPU-only) plus there’s an in-progress CUDA implementation (*cuda* branch) for machines with NVIDIA GPUs running on Windows.
 
 A detailed writeup of the project will eventually live `here <https://0xfede.io/2020/04/16/pathTracer.html>`_.
 
