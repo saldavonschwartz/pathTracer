@@ -8,11 +8,10 @@
 
 #include "HittableVector.hpp"
 
-__device__ HittableVector::HittableVector() {}
-
-__device__ void HittableVector::init(size_t capacity) {
+__device__ void HittableVector::init(int capacity) {
 	this->capacity = capacity;
-	this->data = new Hittable*[capacity];
+	this->size = 0;
+	data = new Hittable*[capacity];
 }
 
 __device__ HittableVector::~HittableVector() {
@@ -28,7 +27,7 @@ __device__ bool HittableVector::boundingBox(double t0, double t1, AABA& bBox) co
 	bool firstTime = true;
 	AABA bBoxTemp;
 
-	for (size_t i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 		auto h = data[i];
 
 		if (!h->boundingBox(t0, t1, bBoxTemp)) {
@@ -52,7 +51,7 @@ __device__ bool HittableVector::hit(const Ray& ray, float tmin, float tmax, HitI
 	bool hitAny = false;
 	HitInfo _info;
 
-	for (size_t i = 0; i < size; i++) {
+	for (int i = 0; i < size; i++) {
 		auto h = data[i];
 
 		if (h->hit(ray, tmin, closest, _info)) {

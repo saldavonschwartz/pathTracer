@@ -3,3 +3,4 @@
 PathTracer.xcodeproj/project.xcworkspace/xcuserdata/*
 x64
 *.pdb
+*.nvuser

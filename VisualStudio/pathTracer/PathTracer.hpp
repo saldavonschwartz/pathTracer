@@ -11,7 +11,7 @@
 
 #include <string>
 
-int renderScene(int sceneId, std::string path, int width, int height, int raysPerPixel, int maxBouncesPerRay);
+int renderScene(std::string path, int width, int height, int raysPerPixel, int maxBouncesPerRay);
 
 
 #endif /* PathTracer_hpp */

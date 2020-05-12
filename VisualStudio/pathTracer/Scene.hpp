@@ -9,12 +9,10 @@
 #ifndef Scene_hpp
 #define Scene_hpp
 
-//#include "HittableVector.hpp"
-//
-//class HittableVector;
-//class Camera;
+class Camera;
+class BVHNode;
 
-//void generateSimpleScene(float aspect, Hittable*** scene, Camera** cam);
-//HittableVector generateComplexScene();
+void generateScene(BVHNode**& bvh, Camera*& cam, float aspect);
+
 
 #endif /* Scene_hpp */
