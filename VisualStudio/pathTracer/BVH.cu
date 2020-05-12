@@ -154,6 +154,16 @@ __device__ void BVHNode::init(Hittable** objects, int start, int end, float t0, 
 	}
 }
 
+__device__ BVHNode::~BVHNode() {
+	if (left != right) {
+		delete left;
+		delete right;
+	}
+	else {
+		delete left;
+	}
+}
+
 __device__ bool BVHNode::boundingBox(double t0, double t1, AABA& bBox) const {
 	bBox = this->bBox;
 	return true;

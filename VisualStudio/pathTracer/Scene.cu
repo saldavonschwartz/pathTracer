@@ -43,13 +43,13 @@ __global__ void _generateScene(BVHNode** bvh, Camera* cam, float aspect, curandS
 	int x = 10, y = 10;
 	int capacity = ((x * 2) * (y * 2)) + 4;
 
-	auto scene = new HittableVector();
-	scene->init(capacity);
+	HittableVector scene;
+	scene.init(capacity);
 
-	scene->add(new Sphere(gvec3{ 0.f,-1000.f,0.f }, 1000.f, new Diffuse(gvec3{ 0.5f })));
-	scene->add(new Sphere(gvec3{ 0.f, 1.f, 0.f }, 1.f, new Dielectric(1.5f)));
-	scene->add(new Sphere(gvec3{ -4.f, 1.f, 0.f }, 1.f, new Diffuse(gvec3{ 0.4f, 0.2f, 0.1f })));
-	scene->add(new Sphere(gvec3{ 4.f, 1.f, 0.f }, 1.f, new Metal(gvec3{ 0.7f, 0.6f, 0.5f }, 0.f)));
+	scene.add(new Sphere(gvec3{ 0.f,-1000.f,0.f }, 1000.f, new Diffuse(gvec3{ 0.5f })));
+	scene.add(new Sphere(gvec3{ 0.f, 1.f, 0.f }, 1.f, new Dielectric(1.5f)));
+	scene.add(new Sphere(gvec3{ -4.f, 1.f, 0.f }, 1.f, new Diffuse(gvec3{ 0.4f, 0.2f, 0.1f })));
+	scene.add(new Sphere(gvec3{ 4.f, 1.f, 0.f }, 1.f, new Metal(gvec3{ 0.7f, 0.6f, 0.5f }, 0.f)));
 
 	for (int a = -x; a < x; a++) {
 		for (int b = -y; b < y; b++) {
@@ -60,25 +60,24 @@ __global__ void _generateScene(BVHNode** bvh, Camera* cam, float aspect, curandS
 				if (materialProbability < 0.8f) {
 					// Diffuse
 					gvec3 albedo = urand3(rs) * urand3(rs);
-					scene->add(new Sphere(center, 0.2f, new Diffuse(albedo)));
+					scene.add(new Sphere(center, 0.2f, new Diffuse(albedo)));
 				}
 				else if (materialProbability < 0.95f) {
 					// Metal
 					gvec3 albedo = (urand3(rs) + 1.f) * 0.5f;
 					auto fuzziness = curand_uniform(rs) * 0.5f;
-					scene->add(new Sphere(center, 0.2f, new Metal(albedo, fuzziness)));
+					scene.add(new Sphere(center, 0.2f, new Metal(albedo, fuzziness)));
 				}
 				else {
 					// glass
-					scene->add(new Sphere(center, 0.2f, new Dielectric(1.5f)));
+					scene.add(new Sphere(center, 0.2f, new Dielectric(1.5f)));
 				}
 			}
 		}
 	}
 
-	*bvh = new BVHNode(scene, 0.f, 1.f, rs);
-	delete scene;
-
+	*bvh = new BVHNode(&scene, 0.f, 1.f, rs);
+	
 	gvec3 lookFrom = { 13.f, 2.f, 3.f };
 	gvec3 lookAt = { 0.f };
 	float f = 10.f;
@@ -90,6 +89,10 @@ __global__ void _generateScene(BVHNode** bvh, Camera* cam, float aspect, curandS
 
 __global__ void initRand(curandState* rState) {
 	curand_init(1984, 0, 0, rState);
+}
+
+__global__ void _freeScene(BVHNode** bvh) {
+	delete *bvh;
 }
 
 void generateScene(BVHNode**& bvh, Camera*& cam, float aspect) {
@@ -107,5 +110,13 @@ void generateScene(BVHNode**& bvh, Camera*& cam, float aspect) {
 	CHK_CUDA(cudaGetLastError());
 	CHK_CUDA(cudaDeviceSynchronize());
 	CHK_CUDA(cudaFree(rState));
+}
+
+void freeScene(BVHNode**& bvh, Camera*& cam) {
+	_freeScene << <1, 1 >> > (bvh);
+	CHK_CUDA(cudaGetLastError());
+	CHK_CUDA(cudaDeviceSynchronize());
+	CHK_CUDA(cudaFree(bvh));
+	CHK_CUDA(cudaFree(cam));
 }
 

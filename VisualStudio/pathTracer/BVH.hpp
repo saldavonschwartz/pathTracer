@@ -25,6 +25,7 @@ public:
 	__device__ void init(Hittable** objects, int start, int end, float t0, float t1, curandState* rs);
 	__device__ bool boundingBox(double t0, double t1, AABA& bBox) const override;
 	__device__ bool hit(const Ray& ray, float tmin, float tmax, HitInfo& info) const override;
+	__device__ ~BVHNode() override;
 };
 
 

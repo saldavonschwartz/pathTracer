@@ -13,6 +13,6 @@ class Camera;
 class BVHNode;
 
 void generateScene(BVHNode**& bvh, Camera*& cam, float aspect);
-
+void freeScene(BVHNode**& bvh, Camera*& cam);
 
 #endif /* Scene_hpp */

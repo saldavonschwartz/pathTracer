@@ -16,7 +16,6 @@ __device__ void HittableVector::init(int capacity) {
 
 __device__ HittableVector::~HittableVector() {
 	delete[] data;
-	size = capacity = 0;
 }
 
 __device__ void HittableVector::add(Hittable* hittable) {

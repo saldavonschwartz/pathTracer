@@ -135,6 +135,8 @@ int renderScene(string path, int width, int height, int raysPerPixel, int maxBou
 		CHK_CUDA(cudaDeviceSynchronize());
 	}
 
+	freeScene(scene, cam);
+	
 	ofstream outputImage(path + "imgOutCuda.ppm");
 
 	if (!outputImage.is_open()) {
@@ -162,8 +164,8 @@ int renderScene(string path, int width, int height, int raysPerPixel, int maxBou
 
 	outputImage.close();
 
-	//freeScene(bvh, scene, cam);
-	//CHK_CUDA(cudaFree(perPixelRand));
-	//CHK_CUDA(cudaFree(fBuffer));
+	CHK_CUDA(cudaFree(perPixelRand));
+	CHK_CUDA(cudaFree(fBuffer));
+
 	return 0;
 }
