@@ -47,3 +47,14 @@ __device__ bool Dielectric::scatter(const Ray& ray, const HitInfo& info, gvec3& 
 	scattered = Ray(info.hitPoint, scatterDir);
 	return true;
 }
+
+__device__ AreaLight::AreaLight(const gvec3& color) 
+	: color(color) {}
+
+__device__ gvec3 AreaLight::emission() {
+	return color;
+}
+
+__device__ bool AreaLight::scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rState) const {
+	return false;
+};

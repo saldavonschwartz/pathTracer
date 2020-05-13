@@ -19,8 +19,10 @@ using HitInfo = Hittable::HitInfo;
 
 class Material {
 public:
+
+  __device__ virtual ~Material() {};
+  __device__ virtual gvec3 emission() { return { 0.f }; }
   __device__ virtual bool scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rs) const = 0;
-	__device__ virtual ~Material() {};
 };
 
 class Diffuse : public Material {
@@ -46,6 +48,15 @@ public:
   
 	__device__ Dielectric(float refractionIdx);
 	__device__ bool scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rState) const override;
+};
+
+class AreaLight : public Material {
+public:
+  gvec3 color;
+
+  __device__ AreaLight(const gvec3& color);
+  __device__ gvec3 emission() override;
+  __device__ bool scatter(const Ray& ray, const HitInfo& info, gvec3& attenuation, Ray& scattered, curandState* rState) const override;
 };
 
 #endif /* Material_hpp */

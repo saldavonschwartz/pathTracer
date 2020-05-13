@@ -38,15 +38,16 @@ __device__ gvec3 sampleRay(Ray ray, float tmin, float tmax, int maxBounces, Hitt
 		
 		if (hittable->hit(ray, tmin, tmax, info)) {
 			if (info.material->scatter(ray, info, attenuation, ray, rState)) {
-				color *= attenuation;
+				color = info.material->emission() + color * attenuation;
 				maxBounces -= 1;
 			}
 			else {
-				color *= {};
+				color *= info.material->emission();
 				break;
 			}
 		}
 		else {
+			color *= {0.f};
 			float t = 0.5f * (ray.dir + gvec3{ 1.f, 1.f, 1.f }).y;
 			color *= (1.f - t) * gvec3 { 1.f, 1.f, 1.f } +t * gvec3{ .5f, .7f, 1.f };
 			break;
@@ -137,7 +138,7 @@ int renderScene(string path, int width, int height, int raysPerPixel, int maxBou
 
 	freeScene(scene, cam);
 	
-	ofstream outputImage(path + "imgOutCuda.ppm");
+	ofstream outputImage(path);
 
 	if (!outputImage.is_open()) {
 		cerr << "ERROR: could not open output file!\n";

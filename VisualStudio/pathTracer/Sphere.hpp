@@ -9,7 +9,6 @@
 #ifndef Sphere_hpp
 #define Sphere_hpp
 
-#include "cuda_runtime.h"
 #include "Hittable.hpp"
 
 class Sphere : public Hittable {

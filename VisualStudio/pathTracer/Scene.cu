@@ -14,6 +14,7 @@
 #include "Sphere.hpp"
 #include "Material.hpp"
 #include "BVH.hpp"
+#include "Plane.hpp"
 
 //__global__ void genScene1(BVHNode** bvh, HittableVector** scene, Camera* cam, float aspect, curandState* rState) {
 //	curand_init(1984, 0, 0, rState);
@@ -48,6 +49,7 @@ __global__ void _generateScene(BVHNode** bvh, Camera* cam, float aspect, curandS
 	scene.add(new Sphere(gvec3{ 0.f, 1.f, 0.f }, 1.f, new Dielectric(1.5f)));
 	scene.add(new Sphere(gvec3{ -4.f, 1.f, 0.f }, 1.f, new Diffuse(gvec3{ 0.4f, 0.2f, 0.1f })));
 	scene.add(new Sphere(gvec3{ 4.f, 1.f, 0.f }, 1.f, new Metal(gvec3{ 0.7f, 0.6f, 0.5f }, 0.f)));
+	//scene.add(new Plane(gvec3{ 5.f, 0.f, -3.5f }, 3.5f, 3.5f, new AreaLight(3.f* gvec3{ 2.1f, 0.8f, 0.4f})));
 
 	for (int a = -x; a < x; a++) {
 		for (int b = -y; b < y; b++) {
@@ -58,7 +60,7 @@ __global__ void _generateScene(BVHNode** bvh, Camera* cam, float aspect, curandS
 				if (materialProbability < 0.8f) {
 					// Diffuse
 					gvec3 albedo = urand3(rs) * urand3(rs);
-					scene.add(new Sphere(center, 0.2f, new Diffuse(albedo)));
+					scene.add(new Sphere(center, 0.2f, new AreaLight(2.f * albedo)));
 				}
 				else if (materialProbability < 0.95f) {
 					// Metal

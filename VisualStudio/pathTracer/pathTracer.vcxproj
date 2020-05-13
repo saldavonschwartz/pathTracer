@@ -30,10 +30,16 @@
     <ClInclude Include="HittableVector.hpp" />
     <ClInclude Include="Material.hpp" />
     <ClInclude Include="PathTracer.hpp" />
+    <ClInclude Include="Plane.hpp" />
     <ClInclude Include="Ray.hpp" />
     <ClInclude Include="Scene.hpp" />
     <ClInclude Include="Sphere.hpp" />
     <ClInclude Include="Utils.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CudaCompile Include="Plane.cu">
+      <FileType>CppCode</FileType>
+    </CudaCompile>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6BD3E0ED-FF3E-477B-9FA1-A4C00984EE1F}</ProjectGuid>

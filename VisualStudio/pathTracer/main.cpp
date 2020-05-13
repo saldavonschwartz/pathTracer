@@ -9,6 +9,6 @@
 #include "PathTracer.hpp"
 
 int main(int argc, const char * argv[]) {
-  renderScene("", 600, 400, 100, 50);
+  renderScene("lightTest2.ppm", 600, 400, 300, 200);
   return 0;
 }
