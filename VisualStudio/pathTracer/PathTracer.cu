@@ -86,8 +86,8 @@ __global__ void renderScene(
 	gvec3 pixel;
 
 	for (int r = 0; r < raysPerPixel; r++) {
-		float u = (x + curand_uniform(rs)) / float(w);
-		float v = (y + curand_uniform(rs)) / float(h);
+		float u = (x + curand_uniform(rs)) / float(w-1);
+		float v = (y + curand_uniform(rs)) / float(h-1);
 		Ray ray = cam->castRay(u, v, rs);
 		pixel += sampleRay(ray, 0.001f, inf, maxBouncesPerRay, *scene, rs);
 	}
@@ -159,8 +159,9 @@ int renderScene(string path, int width, int height, int raysPerPixel, int maxBou
 			outputImage
 				<< int(pixel.r) << " "
 				<< int(pixel.g) << " "
-				<< int(pixel.b) << "\n";
+				<< int(pixel.b) << " ";
 		}
+		outputImage << "\n";
 	}
 
 	outputImage.close();
