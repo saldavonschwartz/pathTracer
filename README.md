@@ -18,7 +18,7 @@ Features currently implemented are:
 Future features will include:
 
 * Arbitrary geometry (i.e.: FBX, OBJ).
-* Monte Carlo integration.
+* Probabilistic sampling.
 * Deep-Learing-based supersampling.
 
 
